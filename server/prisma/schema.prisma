@@ -11,8 +11,19 @@ datasource db {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  email String @unique
-  hash  String
-  salt  String
+  id             Int     @id @default(autoincrement())
+  email          String  @unique
+  role           String  @default("USER")
+  hash           String  @db.VarChar(255)
+  salt           String  @db.VarChar(255)
+  isActivated    Boolean @default(false)
+  activationLink String?
+  token          Token?
+}
+
+model Token {
+  id           Int    @id @default(autoincrement())
+  refreshToken String @unique @map("refreshToken") @db.VarChar(1000)
+  userId       Int    @unique
+  user         User   @relation(fields: [userId], references: [id])
 }

@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
 
+
 export class SingUpBodyDto{
  @ApiProperty({
   example: 'email@gmail.com'
@@ -11,6 +12,8 @@ export class SingUpBodyDto{
  })
   password: string
 }
+
+
 
 export class SingInBodyDto{
  @ApiProperty({

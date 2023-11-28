@@ -8,7 +8,7 @@ export class UsersService {
   findByEmail(email: string) {
     return this.db.user.findFirst({ where: { email } })
   }
-  create(email: string, salt: string, hash: string) {
-    return this.db.user.create({ data: { email, salt, hash } })
+  create(email: string, salt: string, hash: string, activationLink: string) {
+    return this.db.user.create({ data: { email, salt, hash, activationLink } })
   }
 }
