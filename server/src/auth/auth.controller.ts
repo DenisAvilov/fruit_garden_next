@@ -12,21 +12,20 @@ export class AuthController {
   constructor(
     private authService: AuthService, 
     private cookieService: CookieService){}
+
   @Post('sing-up')
   @ApiCreatedResponse()
   async singUp(@Body() body: SingUpBodyDto, @Res({passthrough: true}) res: Response){
-    const {accessToken} = await this.authService.singUp(body.email, body.password)
-    //записать в куки
-    this.cookieService.setToken(res, accessToken)
-  }
+    const {tokens} = await this.authService.singUp(body.email, body.password)
+    this.cookieService.setToken(res, tokens.refreshToken)
+  }  
 
   @Post('sing-in')
   @ApiOkResponse()
   @HttpCode(HttpStatus.OK)
   async singIn(@Body() body: SingInBodyDto,  @Res({passthrough: true}) res: Response){
-    const {accessToken} = await this.authService.singIn(body.email, body.password)
-    //записать в куки
-    this.cookieService.setToken(res, accessToken)
+    const {tokens} = await this.authService.singIn(body.email, body.password)
+    this.cookieService.setToken(res, tokens.refreshToken)
   }
 
   @Post('sing-out')
