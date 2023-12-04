@@ -59,5 +59,5 @@ export class AuthService {
     await this.tokenService.saveToken(userDto.userId, tokens.refreshToken)    
     return {tokens, userDto}    
   }
-  async singOut(){}
+ 
 }

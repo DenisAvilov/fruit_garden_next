@@ -10,14 +10,18 @@ export class AuthGuard implements CanActivate {
     context: ExecutionContext,    
   ): boolean | Promise<boolean> | Observable<boolean> {
    const req = context.switchToHttp().getRequest()
-   const token = req.cookies[CookieService.tokenKey]
+   const token = req.cookies[CookieService.refreshTokenKey]
 
    if(!token){
     throw new  UnauthorizedException()
    }
   
+   // throw new  UnauthorizedException() 403 Ошибка - Роливая модель
+
    try{
-    const sessionInfo = this.jwtService.verifyAsync(token, {secret: process.env.JWT_SECRET_KEY})
+
+    const sessionInfo = this.jwtService.verifyAsync(token, {secret: process.env.JWT_REFRESH_TOKEN_SECRET})
+    
     req['session'] = sessionInfo
    }
 

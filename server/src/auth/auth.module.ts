@@ -10,7 +10,7 @@ import { TokenService } from './token.service';
 @Module({
   imports: [UsersModule, JwtModule.register({
     global: true,
-    secret: process.env.JWT_SECRET_KEY,
+    secret: process.env.JWT_ACCESS_TOKEN_SECRET,
     signOptions: {},
   }),
 ],
