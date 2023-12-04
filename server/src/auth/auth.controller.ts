@@ -18,6 +18,7 @@ export class AuthController {
   async singUp(@Body() body: SingUpBodyDto, @Res({passthrough: true}) res: Response){
     const {tokens} = await this.authService.singUp(body.email, body.password)
     this.cookieService.setToken(res, tokens.refreshToken)
+    return tokens
   }  
 
   @Post('sing-in')
@@ -26,6 +27,7 @@ export class AuthController {
   async singIn(@Body() body: SingInBodyDto,  @Res({passthrough: true}) res: Response){
     const {tokens} = await this.authService.singIn(body.email, body.password)
     this.cookieService.setToken(res, tokens.refreshToken)
+    return tokens
   }
 
   @Post('sing-out')

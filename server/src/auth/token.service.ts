@@ -18,7 +18,8 @@ export class TokenService {
       expiresIn: '15m',  
     })
      const refreshToken = await this.jwtService.signAsync(preload, {
-      expiresIn: '12d',  
+      expiresIn: '12d', 
+      secret: process.env.JWT_REFRESH_TOKEN_SECRET 
     })    
      return {
       accessToken,
