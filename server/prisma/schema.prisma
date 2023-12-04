@@ -11,14 +11,15 @@ datasource db {
 }
 
 model User {
-  id             Int     @id @default(autoincrement())
-  email          String  @unique
-  role           String  @default("USER")
-  hash           String  @db.VarChar(255)
-  salt           String  @db.VarChar(255)
-  isActivated    Boolean @default(false)
+  id             Int      @id @default(autoincrement())
+  email          String   @unique
+  role           String   @default("USER")
+  hash           String   @db.VarChar(255)
+  salt           String   @db.VarChar(255)
+  isActivated    Boolean  @default(false)
   activationLink String?
   token          Token?
+  account        Account?
 }
 
 model Token {
@@ -26,4 +27,33 @@ model Token {
   refreshToken String @unique @map("refreshToken") @db.VarChar(1000)
   userId       Int    @unique
   user         User   @relation(fields: [userId], references: [id])
+}
+
+model Account {
+  id       Int      @id @default(autoincrement())
+  userId   Int      @unique
+  name     String?
+  lastName String?
+  img      String?
+  user     User     @relation(fields: [userId], references: [id])
+  contact  Contact?
+  social   Social?
+}
+
+model Contact {
+  id             Int     @id @default(autoincrement())
+  phone          String? @unique
+  isActivated    Boolean @default(false)
+  activationLink String?
+  userId         Int     @unique
+  account        Account @relation(fields: [userId], references: [id])
+}
+
+model Social {
+  id        Int     @id @default(autoincrement())
+  fb        String? @unique
+  instagram String? @unique
+  telegram  String? @unique
+  userId    Int     @unique
+  account   Account @relation(fields: [userId], references: [id])
 }
