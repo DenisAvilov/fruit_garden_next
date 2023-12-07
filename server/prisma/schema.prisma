@@ -20,40 +20,40 @@ model User {
   activationLink String?
   token          Token?
   account        Account?
+  contact        Contact?
+  social         Social?
 }
 
 model Token {
-  id           Int    @id @default(autoincrement())
   refreshToken String @unique @map("refreshToken") @db.VarChar(1000)
+  id           Int    @id @default(autoincrement())
   userId       Int    @unique
   user         User   @relation(fields: [userId], references: [id])
 }
 
 model Account {
-  id       Int      @id @default(autoincrement())
-  userId   Int      @unique
   name     String?
   lastName String?
   img      String?
-  user     User     @relation(fields: [userId], references: [id])
-  contact  Contact?
-  social   Social?
+  id       Int     @id @default(autoincrement())
+  userId   Int     @unique
+  user     User    @relation(fields: [userId], references: [id])
 }
 
 model Contact {
-  id             Int     @id @default(autoincrement())
   phone          String? @unique
   isActivated    Boolean @default(false)
   activationLink String?
+  id             Int     @id @default(autoincrement())
   userId         Int     @unique
-  account        Account @relation(fields: [userId], references: [id])
+  user           User    @relation(fields: [userId], references: [id])
 }
 
 model Social {
-  id        Int     @id @default(autoincrement())
   fb        String? @unique
   instagram String? @unique
   telegram  String? @unique
+  id        Int     @id @default(autoincrement())
   userId    Int     @unique
-  account   Account @relation(fields: [userId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
 }

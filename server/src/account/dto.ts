@@ -1,6 +1,31 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsBoolean, IsOptional } from "class-validator";
 
+export class UserDto {
+  @ApiProperty()
+  id: number
+
+  @ApiProperty()
+  email: string
+
+  @ApiProperty()
+  role: string
+  
+  @ApiProperty()
+  hash: string
+
+  @ApiProperty()
+  salt: string
+
+  @ApiProperty()
+  @IsBoolean()
+  @IsOptional()
+  isActivated: boolean
+  
+
+
+}
+
 export class AccountDto {
   @ApiProperty()
   id: number 
@@ -19,7 +44,7 @@ export class AccountDto {
   lastName: string | null
 
   @ApiProperty({
-  example: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.klipartz.com%2Fru%2Fsearch%3Fq%3D%25D0%25B0%25D0%25BA%25D0%25BA%25D0%25B0%25D1%2583%25D0%25BD%25D1%2582&psig=AOvVaw0EsuC5iExubquCfWvvEzzw&ust=1701773565477000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJDnu9jO9YIDFQAAAAAdAAAAABAE'
+  example: 'https://www.google.com=images'
   })
   img: string | null
 }
@@ -76,7 +101,7 @@ export class PatchAccountDto {
   lastName?: string | null
 
   @ApiProperty({
-  example: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.klipartz.com%2Fru%2Fsearch%3Fq%3D%25D0%25B0%25D0%25BA%25D0%25BA%25D0%25B0%25D1%2583%25D0%25BD%25D1%2582&psig=AOvVaw0EsuC5iExubquCfWvvEzzw&ust=1701773565477000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJDnu9jO9YIDFQAAAAAdAAAAABAE'
+  example: 'https://www.google.com/images'
   })
   @IsOptional()
   img: string  | null

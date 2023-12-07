@@ -53,9 +53,4 @@ export class GetSessionInfoDto{
   @ApiProperty()
   exp: number
 
-  @ApiProperty()
-  accessToken: string
-
-  @ApiProperty()
-  refreshToken: string
 }

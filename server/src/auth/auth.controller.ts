@@ -16,18 +16,18 @@ export class AuthController {
   @Post('sing-up')
   @ApiCreatedResponse()
   async singUp(@Body() body: SingUpBodyDto, @Res({passthrough: true}) res: Response){
-    const {tokens} = await this.authService.singUp(body.email, body.password)
-    this.cookieService.setToken(res, tokens.refreshToken)
-    return tokens
+    const profile = await this.authService.singUp(body.email, body.password)
+    this.cookieService.setToken(res, profile.tokens.refreshToken)
+    return profile
   }  
 
   @Post('sing-in')
   @ApiOkResponse()
   @HttpCode(HttpStatus.OK)
   async singIn(@Body() body: SingInBodyDto,  @Res({passthrough: true}) res: Response){
-    const {tokens} = await this.authService.singIn(body.email, body.password)
-    this.cookieService.setToken(res, tokens.refreshToken)
-    return tokens
+    const profile = await this.authService.singIn(body.email, body.password)
+    this.cookieService.setToken(res, profile.tokens.refreshToken)
+    return profile
   }
 
   @Post('sing-out')
