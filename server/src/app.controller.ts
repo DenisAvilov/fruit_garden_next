@@ -22,7 +22,14 @@ export class AppController {
     type: HelloWorldDTO,
   })
   async getHello(): Promise<HelloWorldDTO> {
-    const user = await this.dbService.user.findMany({});
+    const user = await this.dbService.user.findMany({
+      where: {id: 40},
+      include:{
+        account: true,
+        contact: true,
+        social: true
+      }
+    });
     console.log('user:', user);
     return { message: this.appService.getHello() };
   }

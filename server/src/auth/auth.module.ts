@@ -6,9 +6,7 @@ import { CookieService } from './cookie.service';
 import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { TokenService } from './token.service';
-import { ContactService } from 'src/contact/contact.service';
-import { SocialService } from 'src/social/social.service';
-import { AccountService } from 'src/account/account.service';
+
 import { DbService } from 'src/db/db.service';
 
 @Module({
@@ -19,7 +17,7 @@ import { DbService } from 'src/db/db.service';
   }),
 ],
   controllers: [AuthController],
-  providers: [DbService, AuthService, PasswordService, CookieService, TokenService, AccountService, ContactService, SocialService],
+  providers: [DbService, AuthService, PasswordService, CookieService, TokenService],
 })
 export class AuthModule {}
 
