@@ -1,5 +1,5 @@
-import {  Injectable } from '@nestjs/common';
-import { AccountDto, PatchAccountDto, UserDto } from './dto';
+import {  Injectable, Param } from '@nestjs/common';
+import { AccountDto, PatchAccountDto, ProfileDto } from './dto';
 import { DbService } from 'src/db/db.service';
 
 
@@ -10,18 +10,27 @@ export class AccountService {
   constructor(private db: DbService){}
 
 async createAccount(userId: number){
-  return await this.db.account.create({data: {userId}})
+  return await this.db.account.create({data: {
+    userId: userId,
+    name: 'Ім\'я',
+    lastName: 'Призвище'
+  }})
 }  
 
-
 async getAccount(userId: number):Promise<AccountDto>{
-  return await this.db.account.findFirstOrThrow({where: {userId}})
-
+  return await this.db.account.findFirstOrThrow({
+    where: {userId}
+  })
  }
  
-async getProfile(id: number):Promise<UserDto>{
-  return await this.db.user.findFirstOrThrow({where: {id}})
-
+async getAccountInfo(@Param('id') id: number ): Promise<ProfileDto>{   
+  return await this.db.user.findFirstOrThrow({
+    where: {id: id},
+    include:{      
+      account: true,
+      contact: true,
+      social: true
+    }})
  }
  
 async patchAccount(userId: number, body: PatchAccountDto):Promise<AccountDto>{

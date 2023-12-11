@@ -21,9 +21,6 @@ export class UserDto {
   @IsBoolean()
   @IsOptional()
   isActivated: boolean
-  
-
-
 }
 
 export class AccountDto {
@@ -58,7 +55,7 @@ export class ContactDto {
   userId: number
      
   @ApiProperty({ example: '+123456789' })
-  phone: string;
+  phone: string | null;
 
   @ApiProperty({ example: false })
   @IsBoolean()
@@ -66,7 +63,7 @@ export class ContactDto {
 
   @ApiProperty({ example: 'example text' })
   @IsBoolean()
-  activationLink: string;
+  activationLink: string | null;
 
 }
 
@@ -79,13 +76,26 @@ export class SocialDto {
   userId: number
 
   @ApiProperty({ example: 'facebook.com/user' })
-  fb: string;
+  fb: string | null;
 
   @ApiProperty({ example: 'instagram.com/user' })
-  instagram: string;
+  instagram: string | null;
 
   @ApiProperty({ example: 't.me/user' })
-  telegram: string;
+  telegram: string | null;
+}
+export class ProfileDto {
+  @ApiProperty()
+  user?: UserDto;
+
+  @ApiProperty()
+  account: AccountDto | null;
+
+  @ApiProperty()
+  contact: ContactDto | null;
+
+  @ApiProperty()
+  social: SocialDto | null;
 }
 // Редоктірованіє 
 export class PatchAccountDto {      

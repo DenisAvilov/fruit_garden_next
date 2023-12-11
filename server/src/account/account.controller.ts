@@ -1,19 +1,21 @@
-import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import { AccountService } from './account.service';
-import { ApiOkResponse } from '@nestjs/swagger';
-import { AccountDto, PatchAccountDto} from './dto';
-// import { Response } from 'express'
+import { ApiOkResponse, ApiParam } from '@nestjs/swagger';
+import { AccountDto,  PatchAccountDto, ProfileDto} from './dto';
 import { CookieService } from 'src/auth/cookie.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { SessionInfo } from 'src/auth/session-info.decorator';
 import { GetSessionInfoDto } from 'src/auth/dto';
+import { DbService } from 'src/db/db.service';
 
 @Controller('account')
-@UseGuards(AuthGuard) //Проверяет состояние сессии и возвращяет Токен
+@UseGuards(AuthGuard) 
 export class AccountController {
   constructor(
     private accountService: AccountService,
-    private cookieService: CookieService){}
+    private cookieService: CookieService,
+    private dbService: DbService){}
+
   @Get()
   @ApiOkResponse({
     type: AccountDto
@@ -22,9 +24,20 @@ export class AccountController {
    return await this.accountService.getAccount(session.userId)  
   }
 
- 
+  @Get(':id')
+  @UseGuards(AuthGuard)
+  @ApiParam({ name: 'id', description: 'ID of the user', example: 44 })
+  @ApiOkResponse({
+    type:  ProfileDto
+  })
+  async getAccountInfo(       
+    @Param('id') id: string    
+  ):Promise<ProfileDto>{    
+    console.log('body.id', id)     
+    return await this.accountService.getAccountInfo(parseInt(id, 10))
+  }
 
-  @Patch() //Метод для обновлення інформації
+  @Patch() 
   @ApiOkResponse({
     type: AccountDto
   })
@@ -39,3 +52,4 @@ export class AccountController {
         return account
     }
 }
+
