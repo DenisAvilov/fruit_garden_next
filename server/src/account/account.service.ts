@@ -1,4 +1,4 @@
-import {  Injectable, Param } from '@nestjs/common';
+import { BadRequestException, Injectable, Param } from '@nestjs/common';
 import { AccountDto, PatchAccountDto, ProfileDto } from './dto';
 import { DbService } from 'src/db/db.service';
 
@@ -38,4 +38,50 @@ async patchAccount(userId: number, body: PatchAccountDto):Promise<AccountDto>{
   return account
  }
 
+async deleteUser(userId: number,  sessionUserId: number){ 
+   const candidate = await this.db.user.findFirst({
+    where: { id: userId },
+    });
+
+    if (!candidate) {    
+      throw new BadRequestException({ type: 'Нема такого юзера' });
+    }
+
+    if(userId !== sessionUserId){
+      throw new BadRequestException({ type: 'Видалити можливо тільки себе' });
+    }
+
+    const transaction = await this.db.$transaction([      
+      this.db.token.deleteMany({
+        where: {
+          userId: userId,
+        },
+      }),
+      this.db.account.deleteMany({
+        where: {
+          userId: userId,
+        },
+      }),
+      this.db.contact.deleteMany({
+        where: {
+          userId: userId,
+        },
+      }),
+      this.db.social.deleteMany({
+        where: {
+          userId: userId,
+        },
+      }),
+      this.db.user.delete({
+        where: {
+          id: userId,
+        },
+      }),
+    ]);
+
+    if (!transaction) {
+      throw new BadRequestException({ type: 'Помилка при видаленні користувача' });
+    }
+    return transaction[4];  
+ }
 }

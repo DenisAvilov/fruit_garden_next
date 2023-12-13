@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Res, UseGuards } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { ApiOkResponse, ApiParam } from '@nestjs/swagger';
 import { AccountDto,  PatchAccountDto, ProfileDto} from './dto';
@@ -7,6 +7,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { SessionInfo } from 'src/auth/session-info.decorator';
 import { GetSessionInfoDto } from 'src/auth/dto';
 import { DbService } from 'src/db/db.service';
+import { Response } from 'express'
 
 @Controller('account')
 @UseGuards(AuthGuard) 
@@ -51,5 +52,23 @@ export class AccountController {
         )
         return account
     }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'id', description: 'ID of the user', example: 44 })  
+  @ApiOkResponse()
+ 
+  async deleteUser(       
+    @Param('id') id: string, 
+    @Res({passthrough: true}) res: Response, 
+    @SessionInfo() session: GetSessionInfoDto  
+  ){            
+   const userDelete =  await this.accountService.deleteUser(parseInt(id, 10), session.userId)
+     this.cookieService.removeToken(res)  
+   return userDelete
+  }
 }
+
+
 
