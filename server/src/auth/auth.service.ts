@@ -16,20 +16,13 @@ export class AuthService {
     ){}
 
  async singUp(email: string, password: string)
-//  : Promise<{
-//    tokens: {accessToken: string; refreshToken: string},
-//    profile: {
-//     user: { id: number;    email: string;    isActivated: boolean;  role: string;},
-//     account: AccountDto,
-//     contact: ContactDto,
-//     social: SocialDto
-//    }}>
    {
   if(!email || !password){ throw new BadRequestException({type: 'всі поля мають бути заповнені'})} 
   const candidate = await this.userService.findByEmail(email)
     if(candidate){
      throw new BadRequestException({type: 'така почта вже існує'})
     }
+    
     const activationLink = uuid()
     const salt = this.passwordService.getSalt()
     const hash = this.passwordService.getHash(password, salt)
