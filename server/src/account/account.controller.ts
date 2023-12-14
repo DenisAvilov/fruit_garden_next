@@ -52,13 +52,12 @@ export class AccountController {
         )
         return account
     }
-
+ 
   @Delete(':id')
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiParam({ name: 'id', description: 'ID of the user', example: 44 })  
-  @ApiOkResponse()
- 
+  @ApiOkResponse() 
   async deleteUser(       
     @Param('id') id: string, 
     @Res({passthrough: true}) res: Response, 

@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common'
 import { AccountService } from 'src/account/account.service'
 import { DbService } from 'src/db/db.service'
 import { UserDTO } from './user-dto'
-import { ContactService } from 'src/contact/contact.service'
-import { SocialService } from 'src/social/social.service'
 import { AccountDto, ContactDto, SocialDto } from 'src/account/dto'
+import { ContactService } from 'src/account/contact.service'
+import { SocialService } from 'src/account/social.service'
 
 @Injectable()
 export class UsersService {

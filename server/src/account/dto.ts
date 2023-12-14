@@ -48,41 +48,42 @@ export class AccountDto {
 
 export class ContactDto {
 
+  @ApiProperty({example: '+123456789'})
+  phone: string | null
+
+ 
+  @ApiProperty({ example: false })
+  @IsBoolean()
+  isActivated: boolean
+
+  @ApiProperty({ example: 'http//:link' })
+  activationLink: string | null
+
   @ApiProperty()
   id: number
 
   @ApiProperty()
   userId: number
-     
-  @ApiProperty({ example: '+123456789' })
-  phone: string | null;
-
-  @ApiProperty({ example: false })
-  @IsBoolean()
-  isActivated: boolean;
-
-  @ApiProperty({ example: 'example text' })
-  @IsBoolean()
-  activationLink: string | null;
 
 }
 
 export class SocialDto {
   
   @ApiProperty()
-  id: number
+  @ApiProperty({example: 'http//:fb'})
+  fb: string | null
+
+  @ApiProperty({example: 'http//:instagram'})
+  instagram: string | null 
+
+  @ApiProperty({example: 'http//:telegram'})
+  telegram: string | null 
 
   @ApiProperty()
-  userId: number
+  id: number 
 
-  @ApiProperty({ example: 'facebook.com/user' })
-  fb: string | null;
-
-  @ApiProperty({ example: 'instagram.com/user' })
-  instagram: string | null;
-
-  @ApiProperty({ example: 't.me/user' })
-  telegram: string | null;
+  @ApiProperty()
+  userId: number 
 }
 export class ProfileDto {
   @ApiProperty()
