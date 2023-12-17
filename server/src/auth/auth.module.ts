@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { TokenService } from './token.service';
 
 import { DbService } from 'src/db/db.service';
+import { MailService } from './mail.service';
 
 @Module({
   imports: [UsersModule, JwtModule.register({
@@ -16,8 +17,9 @@ import { DbService } from 'src/db/db.service';
     signOptions: {},
   }),
 ],
+ 
   controllers: [AuthController],
-  providers: [DbService, AuthService, PasswordService, CookieService, TokenService],
+  providers: [ DbService, AuthService, PasswordService, CookieService, TokenService, MailService],
 })
 export class AuthModule {}
 
