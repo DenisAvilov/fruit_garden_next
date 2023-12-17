@@ -4,7 +4,7 @@ import { IsEmail, IsNotEmpty, Length } from "class-validator"
 
 export class SingUpBodyDto{
  @ApiProperty({
-  example: 'email@gmail.com'
+  example: 'avilovd.a@gmail.com'
  })
  @IsEmail({},{ message: 'Введіть дійсну електронну адресу' })
   email: string
@@ -16,12 +16,9 @@ export class SingUpBodyDto{
   @Length(4, 20, { message: 'Пароль повинен містити від 4 до 20 символів' })
   password: string
 }
-
-
-
 export class SingInBodyDto{
  @ApiProperty({
-  example: 'email@gmail.com'
+  example: 'avilovd.a@gmail.com'
  })
  @IsEmail()
   email: string
@@ -33,7 +30,6 @@ export class SingInBodyDto{
  @Length(4, 20, { message: 'Пароль повинен містити від 4 до 20 символів' })
   password: string
 }
-
 export class GetSessionInfoDto{
   @ApiProperty()
   userId: number
@@ -53,4 +49,8 @@ export class GetSessionInfoDto{
   @ApiProperty()
   exp: number
 
+}
+export class  ActivationLink{
+    @ApiProperty()
+    activationLink: string  
 }

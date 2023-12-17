@@ -1,16 +1,18 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Res, UseGuards } from '@nestjs/common';
-import { GetSessionInfoDto, SingInBodyDto, SingUpBodyDto } from './dto';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Res, UseGuards } from '@nestjs/common';
+import { ActivationLink, GetSessionInfoDto, SingInBodyDto, SingUpBodyDto } from './dto';
 import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Response } from 'express'
 import { CookieService } from './cookie.service';
 import { AuthGuard } from './auth.guard';
 import { SessionInfo } from './session-info.decorator';
+import { MailService } from './mail.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    private authService: AuthService, 
+    private authService: AuthService,
+    private mailService: MailService, 
     private cookieService: CookieService){}
 
   @Post('sing-up')
@@ -46,4 +48,17 @@ export class AuthController {
   getSessionInfo(@SessionInfo() session: GetSessionInfoDto){
     return session
   }
+
+  @Get(':activeLink')
+  @ApiOkResponse({type: ActivationLink})
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  activateMail(
+    @Param('activeLink') activeLink: string, 
+    @SessionInfo() session: GetSessionInfoDto
+    ){  
+     return this.mailService.activeMail(activeLink, session.userId)
+   
+  }
 }
+

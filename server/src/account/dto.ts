@@ -21,6 +21,10 @@ export class UserDto {
   @IsBoolean()
   @IsOptional()
   isActivated: boolean
+
+ 
+  // @ApiProperty()
+  // createdAt: Date
 }
 
 export class AccountDto {
@@ -127,6 +131,9 @@ export class PatchContactDto {
   @IsBoolean()
   @IsOptional()
   isActivated: boolean;
+
+  @ApiProperty({ example: 'http//:link' })
+  activationLink: string 
   }
 
 export class PatchSocialDto {  
@@ -142,4 +149,6 @@ export class PatchSocialDto {
   @ApiProperty({ example: 't.me/user' })
   @IsOptional()
   telegram: string;
+
+ 
 }

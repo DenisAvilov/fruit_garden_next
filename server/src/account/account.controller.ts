@@ -1,13 +1,16 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Res, UseGuards } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { ApiOkResponse, ApiParam } from '@nestjs/swagger';
-import { AccountDto,  PatchAccountDto, ProfileDto} from './dto';
+import { AccountDto,  ContactDto,  PatchAccountDto, PatchContactDto,  PatchSocialDto,  ProfileDto, SocialDto,} from './dto';
 import { CookieService } from 'src/auth/cookie.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { SessionInfo } from 'src/auth/session-info.decorator';
 import { GetSessionInfoDto } from 'src/auth/dto';
 import { DbService } from 'src/db/db.service';
 import { Response } from 'express'
+import { ContactService } from './contact.service';
+import { SocialService } from './social.service';
+
 
 @Controller('account')
 @UseGuards(AuthGuard) 
@@ -15,6 +18,8 @@ export class AccountController {
   constructor(
     private accountService: AccountService,
     private cookieService: CookieService,
+    private contactService: ContactService,
+    private socialService: SocialService,
     private dbService: DbService){}
 
   @Get()
@@ -67,7 +72,39 @@ export class AccountController {
      this.cookieService.removeToken(res)  
    return userDelete
   }
-}
 
+//CONTACT endPoint
+ @Patch('patch-contact') 
+  @ApiOkResponse({
+    type: ContactDto
+  })
+  async patchContact(
+    @Body() body: PatchContactDto, 
+    @SessionInfo() session: GetSessionInfoDto
+    ):Promise<ContactDto>{
+      const contact = await this.contactService.patchContact(
+        session.userId,
+        body
+        )
+        return contact
+    }
+    
+//SOCIAL endPoint
+ @Patch('patch-social') 
+  @ApiOkResponse({
+    type: SocialDto
+  })
+  async patchSocial(
+    @Body() body: PatchSocialDto, 
+    @SessionInfo() session: GetSessionInfoDto
+    ):Promise<SocialDto>{
+      const contact = await this.socialService.patchSocial(
+        session.userId,
+        body
+        )
+        return contact
+    }
+
+}
 
 

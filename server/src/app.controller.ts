@@ -1,14 +1,14 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { ApiOkResponse, ApiProperty } from '@nestjs/swagger';
+import { ApiOkResponse } from '@nestjs/swagger';
 import { DbService } from './db/db.service';
 // import { PrismaClient } from '@prisma/client';
 // const prisma = new PrismaClient();
 
-class HelloWorldDTO {
-  @ApiProperty()
-  message: string;
-}
+// class HelloWorldDTO {
+//   @ApiProperty()
+//   message: string;
+// }
 
 @Controller()
 export class AppController {
@@ -18,12 +18,10 @@ export class AppController {
   ) {}
 
   @Get()
-  @ApiOkResponse({
-    type: HelloWorldDTO,
-  })
-  async getHello(): Promise<HelloWorldDTO> {
+  @ApiOkResponse()
+  async getHello() {
     const user = await this.dbService.user.findMany({
-      where: {id: 40},
+      
       include:{
         account: true,
         contact: true,
@@ -31,7 +29,7 @@ export class AppController {
       }
     });
     console.log('user:', user);
-    return { message: this.appService.getHello() };
+    return user
   }
 }
 // prisma.$disconnect();

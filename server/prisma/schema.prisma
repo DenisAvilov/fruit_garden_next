@@ -17,7 +17,8 @@ model User {
   hash           String   @db.VarChar(255)
   salt           String   @db.VarChar(255)
   isActivated    Boolean  @default(false)
-  activationLink String?
+  activationLink String   @default(dbgenerated("(NOW() + interval '24 hours')::timestamp"))
+  createdAt      DateTime @default(now())
   token          Token?
   account        Account?
   contact        Contact?
