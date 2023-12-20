@@ -18,7 +18,7 @@ export class UsersService {
  async findByEmail(email: string) {
     return this.db.user.findFirst({ where: { email } })
   }
-  async create(
+ async create(
     email: string, 
     salt: string, 
     hash: string, 

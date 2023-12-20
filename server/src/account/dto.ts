@@ -20,11 +20,7 @@ export class UserDto {
   @ApiProperty()
   @IsBoolean()
   @IsOptional()
-  isActivated: boolean
-
- 
-  // @ApiProperty()
-  // createdAt: Date
+  isActivated: boolean 
 }
 
 export class AccountDto {
@@ -50,11 +46,14 @@ export class AccountDto {
   img: string | null
 }
 
-export class ContactDto {
-
-  @ApiProperty({example: '+123456789'})
+export class ContactDtoSW {
+  @ApiProperty({example: '+380506195452'})
   phone: string | null
+}
 
+export class ContactDto {
+  @ApiProperty({example: '+380506195452'})
+  phone: string | null
  
   @ApiProperty({ example: false })
   @IsBoolean()
@@ -70,6 +69,12 @@ export class ContactDto {
   userId: number
 
 }
+
+export class IsActivatedContactDto{
+  @ApiProperty()
+  @IsBoolean()
+  isActivated: boolean 
+} 
 
 export class SocialDto {
   
@@ -89,6 +94,7 @@ export class SocialDto {
   @ApiProperty()
   userId: number 
 }
+
 export class ProfileDto {
   @ApiProperty()
   user?: UserDto;
@@ -102,7 +108,7 @@ export class ProfileDto {
   @ApiProperty()
   social: SocialDto | null;
 }
-// Редоктірованіє 
+
 export class PatchAccountDto {      
  
   @ApiProperty({
@@ -123,18 +129,14 @@ export class PatchAccountDto {
 }
 
 export class PatchContactDto {
+  @ApiProperty({ example: '+380506195452' })
+  phone: string;   
+}
 
-  @ApiProperty({ example: '+123456789' })
-  phone: string;
-
-  @ApiProperty({ example: false })
-  @IsBoolean()
-  @IsOptional()
-  isActivated: boolean;
-
-  @ApiProperty({ example: 'http//:link' })
-  activationLink: string 
-  }
+export class ContactDtoSWActivate {
+  @ApiProperty({ example: '1234' })
+  activationLink: string;
+}
 
 export class PatchSocialDto {  
 

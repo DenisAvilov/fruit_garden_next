@@ -1,7 +1,7 @@
 import {  BadRequestException, Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer'
 import { DbService } from 'src/db/db.service';
-// import { isAfter, parse } from 'date-fns'
+
 
 @Injectable()
 export class MailService {
@@ -12,7 +12,7 @@ constructor(
       this.transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT,
-      secure: false, // уточнить самостоятельно
+      secure: false, // уточніть самостійно
       auth:{
           user: process.env.SMPT_USER,
           pass: process.env.SMPT_PASSWORD
