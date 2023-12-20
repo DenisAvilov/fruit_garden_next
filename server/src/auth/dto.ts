@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsEmail, IsNotEmpty, Length } from "class-validator"
+import { IsEmail, IsNotEmpty, Length, Matches } from "class-validator"
 
 
 export class SingUpBodyDto{
@@ -16,6 +16,20 @@ export class SingUpBodyDto{
   @Length(4, 20, { message: 'Пароль повинен містити від 4 до 20 символів' })
   password: string
 }
+
+export class SingUpBodyPhone{
+ @ApiProperty({
+ example: '0506195452'
+ })
+ @IsNotEmpty({ message: 'Введіть свій номер телефону' })
+ @Matches(/^0\d{9}$/, { message: 'Неправильний формат номера телефону' })
+ phoneNumber: string 
+}
+
+
+
+
+
 export class SingInBodyDto{
  @ApiProperty({
   example: 'avilovd.a@gmail.com'
@@ -54,3 +68,4 @@ export class  ActivationLink{
     @ApiProperty()
     activationLink: string  
 }
+

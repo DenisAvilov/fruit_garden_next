@@ -2,11 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { PasswordService } from './password.service';
 import { TokenService } from './token.service';
-// import { v4 as uuid } from 'uuid';
 import { UserDTO } from 'src/users/user-dto';
 import { MailService } from './mail.service';
-
-
 
 @Injectable()
 export class AuthService {
@@ -15,16 +12,7 @@ export class AuthService {
     private passwordService: PasswordService,
     private tokenService: TokenService, 
     private mailService: MailService 
-    ){}
-
- private generateActivationLink(): string {
-     const activationLinkExpires = new Date();
-    activationLinkExpires.setHours(activationLinkExpires.getHours() + 24)
-
-    const activationLink = activationLinkExpires.toISOString(); 
-    
-    return activationLink;
-  } 
+    ){} 
 
  async singUp(email: string, password: string)
    {
@@ -38,14 +26,13 @@ export class AuthService {
     const hash = this.passwordService.getHash(password, salt)    
     const profile =  await this.userService.create(email, salt, hash)
      
-    await this.mailService.sendActivationMailLink(email, profile.user.activationLink)
+    // await this.mailService.sendActivationMailLink(email, profile.user.activationLink)
     const tokens  = await this.tokenService.generateToken({
     userId: profile.user.userId,
     email: profile.user.email,
     isActivated: profile.user.isActivated,
     role: profile.user.role,
-})  
-      
+})       
     
     await this.tokenService.saveToken(profile.user.userId, tokens.refreshToken)  
     return { profile, tokens }
@@ -71,6 +58,5 @@ export class AuthService {
 })
     await this.tokenService.saveToken(user.userId, tokens.refreshToken)    
     return {tokens, user}    
-  }
- 
+  } 
 }

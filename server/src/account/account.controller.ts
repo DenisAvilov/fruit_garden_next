@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Res, UseGuards } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { ApiOkResponse, ApiParam } from '@nestjs/swagger';
-import { AccountDto,  ContactDto,  PatchAccountDto, PatchContactDto,  PatchSocialDto,  ProfileDto, SocialDto,} from './dto';
+import { AccountDto,  ContactDtoSW,  ContactDtoSWActivate,  PatchAccountDto, PatchSocialDto,  ProfileDto, SocialDto,} from './dto';
 import { CookieService } from 'src/auth/cookie.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { SessionInfo } from 'src/auth/session-info.decorator';
@@ -38,8 +38,7 @@ export class AccountController {
   })
   async getAccountInfo(       
     @Param('id') id: string    
-  ):Promise<ProfileDto>{    
-    console.log('body.id', id)     
+  ):Promise<ProfileDto>{     
     return await this.accountService.getAccountInfo(parseInt(id, 10))
   }
 
@@ -75,19 +74,36 @@ export class AccountController {
 
 //CONTACT endPoint
  @Patch('patch-contact') 
-  @ApiOkResponse({
-    type: ContactDto
+ @ApiOkResponse({
+    type: ContactDtoSW
   })
-  async patchContact(
-    @Body() body: PatchContactDto, 
+ async patchContact(
+    @Body() body: ContactDtoSW, 
     @SessionInfo() session: GetSessionInfoDto
-    ):Promise<ContactDto>{
-      const contact = await this.contactService.patchContact(
+    ):Promise<{isActivated: boolean}>{
+      const isActivated  = await this.contactService.patchContact(
         session.userId,
         body
-        )
-        return contact
+        )            
+      return isActivated
     }
+
+
+  //CONTACT endPoint
+ @Patch('patch-contact-activate') 
+ @ApiOkResponse({
+    type: ContactDtoSWActivate
+  })
+ async patchVerifyPhone(
+    @Body() body: ContactDtoSWActivate, 
+    @SessionInfo() session: GetSessionInfoDto
+    ):Promise<{isActivated: boolean}>{
+      const isActivated  = await this.contactService.patchVerifyPhone(
+        session.userId,
+        body
+        )            
+      return isActivated
+    }  
     
 //SOCIAL endPoint
  @Patch('patch-social') 
