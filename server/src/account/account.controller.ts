@@ -1,15 +1,15 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Res, UseGuards } from '@nestjs/common';
-import { AccountService } from './account.service';
-import { ApiOkResponse, ApiParam } from '@nestjs/swagger';
-import { AccountDto,  ContactDtoSW,  ContactDtoSWActivate,  PatchAccountDto, PatchSocialDto,  ProfileDto, SocialDto,} from './dto';
-import { CookieService } from 'src/auth/cookie.service';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { SessionInfo } from 'src/auth/session-info.decorator';
-import { GetSessionInfoDto } from 'src/auth/dto';
-import { DbService } from 'src/db/db.service';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Res, UseGuards } from '@nestjs/common'
+import { AccountService } from './account.service'
+import { ApiOkResponse, ApiParam } from '@nestjs/swagger'
+import { AccountDto,  ContactDtoSW,  ContactDtoSWActivate,  PatchAccountDto, PatchSocialDto,  ProfileDto, SocialDto,} from './dto'
+import { CookieService } from 'src/auth/cookie.service'
+import { AuthGuard } from 'src/auth/auth.guard'
+import { SessionInfo } from 'src/auth/session-info.decorator'
+import { GetSessionInfoDto } from 'src/auth/dto'
 import { Response } from 'express'
-import { ContactService } from './contact.service';
-import { SocialService } from './social.service';
+import { ContactService } from './contact.service'
+import { SocialService } from './social.service'
+import { Roles } from 'src/auth/roles.decorator'
 
 
 @Controller('account')
@@ -19,8 +19,8 @@ export class AccountController {
     private accountService: AccountService,
     private cookieService: CookieService,
     private contactService: ContactService,
-    private socialService: SocialService,
-    private dbService: DbService){}
+    private socialService: SocialService
+    ){}
 
   @Get()
   @ApiOkResponse({
@@ -29,9 +29,8 @@ export class AccountController {
  async getAccount(@SessionInfo() session: GetSessionInfoDto):Promise<AccountDto>{
    return await this.accountService.getAccount(session.userId)  
   }
-
-  @Get(':id')
-  @UseGuards(AuthGuard)
+//GET CONTACT BY ID  endPoint
+  @Get(':id')   
   @ApiParam({ name: 'id', description: 'ID of the user', example: 44 })
   @ApiOkResponse({
     type:  ProfileDto
@@ -41,7 +40,7 @@ export class AccountController {
   ):Promise<ProfileDto>{     
     return await this.accountService.getAccountInfo(parseInt(id, 10))
   }
-
+//UPDATE PHONE CONTACT endPoint
   @Patch() 
   @ApiOkResponse({
     type: AccountDto
@@ -57,8 +56,9 @@ export class AccountController {
         return account
     }
  
-  @Delete(':id')
-  @UseGuards(AuthGuard)
+//DELETE CONTACT ID endPoint    
+  @Delete(':id')  
+  @Roles('ADMIN') 
   @HttpCode(HttpStatus.OK)
   @ApiParam({ name: 'id', description: 'ID of the user', example: 44 })  
   @ApiOkResponse() 
@@ -72,7 +72,7 @@ export class AccountController {
    return userDelete
   }
 
-//CONTACT endPoint
+//UPDATE PHONE CONTACT endPoint
  @Patch('patch-contact') 
  @ApiOkResponse({
     type: ContactDtoSW
@@ -89,7 +89,7 @@ export class AccountController {
     }
 
 
-  //CONTACT endPoint
+  //ACTIVATION EMAIL CONTACT endPoint
  @Patch('patch-contact-activate') 
  @ApiOkResponse({
     type: ContactDtoSWActivate
@@ -105,7 +105,7 @@ export class AccountController {
       return isActivated
     }  
     
-//SOCIAL endPoint
+//UPDATE SOCIAL endPoint
  @Patch('patch-social') 
   @ApiOkResponse({
     type: SocialDto

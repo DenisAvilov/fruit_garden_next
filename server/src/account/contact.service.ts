@@ -25,8 +25,9 @@ export class ContactService {
         phone: body.phone,
         activationLink
       }})
-      if(contact.phone && contact.activationLink){        
-       await this.sendCodePhone(contact.phone, contact.activationLink)
+      if(contact.phone && contact.activationLink){ 
+        console.log('Повідомлення відправлено')       
+      //  await this.sendCodePhone(contact.phone, contact.activationLink)
       }    
        return { isActivated: contact.isActivated }     
       }  
