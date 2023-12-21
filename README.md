@@ -1,1 +1,1 @@
-# User-registration-template
+# Online sweet shop
