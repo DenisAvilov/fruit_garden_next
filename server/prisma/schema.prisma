@@ -1,4 +1,3 @@
-// This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
@@ -11,18 +10,27 @@ datasource db {
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
-  email          String   @unique
-  role           String   @default("USER")
-  hash           String   @db.VarChar(255)
-  salt           String   @db.VarChar(255)
-  isActivated    Boolean  @default(false)
-  activationLink String   @default(dbgenerated("(NOW() + interval '24 hours')::timestamp"))
-  createdAt      DateTime @default(now())
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  role           Role      @default(USER)
+  hash           String    @db.VarChar(255)
+  salt           String    @db.VarChar(255)
+  isActivated    Boolean   @default(false)
+  activationLink String    @default(dbgenerated("(NOW() + interval '24 hours')::timestamp"))
+  createdAt      DateTime  @default(now())
   token          Token?
   account        Account?
   contact        Contact?
   social         Social?
+  ratings        Rating[]
+  comments       Comment[]
+
+  @@unique([id, email])
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 model Token {
@@ -57,4 +65,134 @@ model Social {
   id        Int     @id @default(autoincrement())
   userId    Int     @unique
   user      User    @relation(fields: [userId], references: [id])
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  img         String[]
+  description String
+
+  quantity    Int? // Поле кількості товару на налічії
+  category    Category     @relation(fields: [categoryId], references: [id])
+  subcategory Subcategory? @relation(fields: [subcategoryId], references: [id])
+  brand       Brand?       @relation(fields: [brandId], references: [id])
+  createdAt   DateTime     @default(now()) @map("date") @db.Date // Поле дати створення продукту
+  ingredients String // Поле переліку інгрідієнтів продукту  
+
+  smaks           Smaks[] // Поле смак  
+  expirationDate  String? // Поле терміну придатності продукту
+  status          String  @default("Під замовленням")
+  shippingInfo    String? // Інформація про доставку
+  logisticDetails String? // Логістичні деталі
+
+  categoryId    Int
+  subcategoryId Int?
+  brandId       Int?
+  rating        Rating[]
+  comments      Comment[]
+  smaksId       Int[]
+
+  ProductAttribute ProductAttribute[]
+
+  additional Additional[]
+}
+
+model ProductAttribute {
+  id          Int             @id @default(autoincrement())
+  product     Product         @relation(fields: [productId], references: [id])
+  productId   Int
+  Weight      WeightProduct[]
+  Price       Price[]
+  SizeProduct SizeProduct?
+}
+
+model WeightProduct {
+  id     Int      @id @default(autoincrement())
+  weight Float[]
+  unic   String[] @default(["kg."])
+
+  weightId         Int
+  ProductAttribute ProductAttribute @relation(fields: [weightId], references: [id], onDelete: Cascade)
+}
+
+model Price {
+  id    Int     @id @default(autoincrement())
+  price Float[]
+
+  startDate DateTime? @default(now())
+  endDate   DateTime? // Дата закінчення дії ціни
+
+  priceId          Int
+  ProductAttribute ProductAttribute @relation(fields: [priceId], references: [id], onDelete: Cascade)
+}
+
+model SizeProduct {
+  id   Int      @id @default(autoincrement())
+  size String[]
+
+  sizeId           Int              @unique
+  ProductAttribute ProductAttribute @relation(fields: [sizeId], references: [id], onDelete: Cascade)
+}
+
+model Smaks {
+  id      Int       @id @default(autoincrement())
+  name    String
+  Product Product[]
+}
+
+model Additional {
+  id          Int       @id @default(autoincrement())
+  name        String?
+  description String?
+  Product     Product[]
+}
+
+model Category {
+  id            Int           @id @default(autoincrement())
+  img           String?
+  name          String
+  products      Product[]
+  subcategories Subcategory[] // Замінено поле на subcategories
+}
+
+model Subcategory {
+  id       Int       @id @default(autoincrement())
+  name     String
+  products Product[]
+
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+}
+
+model Brand {
+  id      Int       @id @default(autoincrement())
+  name    String    @unique
+  Product Product[]
+}
+
+model Rating {
+  id        Int      @id @default(autoincrement())
+  value     Float    @default(0)
+  productId Int
+  userId    Int
+  product   Product? @relation(fields: [productId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@unique([productId, userId])
+}
+
+model Comment {
+  id            Int       @id @default(autoincrement())
+  text          String
+  productId     Int
+  userId        Int
+  parentId      Int?
+  product       Product   @relation(fields: [productId], references: [id])
+  user          User      @relation(fields: [userId], references: [id])
+  parentComment Comment?  @relation("RepliesToComment", fields: [parentId], references: [id])
+  replies       Comment[] @relation("RepliesToComment")
+  createdAt     DateTime  @default(now())
+
+  @@unique([productId, userId])
 }

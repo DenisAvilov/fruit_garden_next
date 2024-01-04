@@ -29,7 +29,9 @@ async getAccountInfo(@Param('id') id: number ): Promise<ProfileDto>{
     include:{      
       account: true,
       contact: true,
-      social: true
+      social: true,
+      ratings: true,
+      comments: true
     }})
  }
  
