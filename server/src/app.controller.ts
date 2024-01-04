@@ -20,15 +20,13 @@ export class AppController {
   @Get()
   @ApiOkResponse()
   async getHello() {
-    const user = await this.dbService.user.findMany({
-      
+    const user = await this.dbService.user.findMany({      
       include:{
         account: true,
         contact: true,
         social: true
       }
-    });
-    console.log('user:', user);
+    });    
     return user
   }
 }

@@ -58,7 +58,7 @@ export class AccountController {
  
 //DELETE CONTACT ID endPoint    
   @Delete(':id')  
-  @Roles('ADMIN') 
+  @Roles('USER') 
   @HttpCode(HttpStatus.OK)
   @ApiParam({ name: 'id', description: 'ID of the user', example: 44 })  
   @ApiOkResponse() 

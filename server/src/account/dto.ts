@@ -21,6 +21,12 @@ export class UserDto {
   @IsBoolean()
   @IsOptional()
   isActivated: boolean 
+
+  @ApiProperty()
+  activationLink: string
+
+  @ApiProperty()
+  createdAt: string
 }
 
 export class AccountDto {
