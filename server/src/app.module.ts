@@ -14,9 +14,6 @@ import { CategoryService } from './product/category/category.service';
 import { SubcategoryService } from './product/subcategory/subcategory.service';
 import { SmakuService } from './product/smaku/smaku.service';
 import { RatingService } from './product/rating/rating.service';
-import { PriceService } from './product/price/price.service';
-import { SizesService } from './product/sizes/sizes.service';
-import { WeightService } from './product/weight/weight.service';
 import { AdditionalService } from './product/additional/additional.service';
 
 
@@ -27,7 +24,7 @@ import { AdditionalService } from './product/additional/additional.service';
   providers: [
     AppService, DbService, ProductService,
     BrandService, CategoryService, SubcategoryService,
-    SmakuService, RatingService, PriceService,
-    SizesService, WeightService, AdditionalService],
+    SmakuService, RatingService,
+    AdditionalService],
 })
 export class AppModule {}

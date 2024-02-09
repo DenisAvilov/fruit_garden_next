@@ -1,16 +1,34 @@
-import {  Injectable } from '@nestjs/common';
+import {  BadRequestException, HttpException, HttpStatus, Injectable, UseGuards } from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
-import {  AttributeDto, PostProductDto } from './postProductDto';
+import {  AttributeDto,    PostProductDto } from './postProductDto';
+import { DeletePriceDto, ProductDto } from './productDto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 
 
 @Injectable()
+@UseGuards(AuthGuard) 
 export class ProductService {
   constructor(
   private  db: DbService
   ){}
- async createProduct(productDto: PostProductDto) {
-  
+
+private async createProductAttributes(attribute: AttributeDto) {
+    const weightData = attribute.weight.map((w, index) => ({ weight: [w], unic: [attribute.unic[index]] }));
+    
+    const createdProductAttribute = await this.db.productAttribute.create({
+      data: {
+        productId: attribute.productId,
+        Weight: { create: weightData },
+        Price: { create: attribute.price.map((p) => ({ price: [p], startDate: attribute.startDate, endDate: attribute.endDate })) },
+        SizeProduct: { create: { size: attribute.size } },
+      },
+    });
+
+    return createdProductAttribute;
+}
+
+async createProduct(productDto: PostProductDto) { 
     try {
        const existingCategory = await this.db.category.findUnique({
        where: { id: productDto.categoryId },
@@ -25,16 +43,13 @@ export class ProductService {
       description: productDto.description,  
       ingredients: productDto.ingredients,          
       category: { connect: { id: productDto.categoryId } }, 
-      smaksId: { set: productDto.smaksId },    
-      // smaks:{ select: { name: true }},     
-      //  additional: productDto.additional
-    }    
-    if (productDto.additional) {
-      const additionalData = Array.isArray(productDto.additional)
-    ? productDto.additional.map((a) => ({ name: a.name, description: a.description }))
-    : [{ name: productDto.additional.name, description: productDto.additional.description }];
+      smaksId: { set: productDto.smaksId },      
+    }   
+    if (productDto.additional && productDto.additional.length > 0) {
+      const additionalData = productDto.additional.map((a) => ({ name: a?.name || null, description: a?.description || null }));
+      productData.additional = { create: additionalData };
 
-  productData.additional = { create: additionalData };
+      
     }
     if (productDto.subcategoryId) {
       productData.subcategory = { connect: { id: productDto.subcategoryId } };
@@ -61,53 +76,148 @@ export class ProductService {
       data: productData,      
     });    
     if (!product) {
+      
         throw new Error('Product not found');
       }
-    const weightData = productDto.attribute.weight.map((w, index) => ({ weight: [w], unic: [productDto.attribute.unic[index]] }));
+    const weightData = productDto.productAttribute.Weight.weight.map((w, index) => ({ weight: [w], unic: [productDto.productAttribute.Weight.unic[index]] }));
     
-    const productAttributes = await this.db.productAttribute.create({
+     await this.db.productAttribute.create({
       data: {
         productId: product.id, 
         Weight: {                     
           create: weightData            
         },
         Price: {
-          create: productDto.attribute.price.map((p) => ({ price: [p], startDate: productDto.attribute.startDate, endDate: productDto.attribute.endDate })),
+          create: productDto.productAttribute.Price.price.map((p) => ({ price: [p], startDate: productDto.productAttribute.Price.startDate, endDate: productDto.productAttribute.Price.endDate })),
         },
         SizeProduct: {
           create: {
-            size: productDto.attribute.size,
+            size: productDto.productAttribute.SizeProduct.size,
           },
         },
         
       },
     });
-    return {productData, productAttributes};
+    return productData;
     } catch (error) {      
-      throw new Error(`Помилка при створенні продукту ${error.message}  ${error}`, );
+      throw new HttpException(`Помилка при створенні продукту ${error.message} ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-  }
+}
  
 
-  async productId(id: number){    
-    return  await this.db.product.findFirstOrThrow({
-      where: {id},
-      include: { 
-        smaks: true,
-        ProductAttribute: {
-        include: {
-          Weight: true,
-          Price: true,
-          SizeProduct: true,          
-        },       
-      },
-       additional: true
-      },
-    })       
+async productId(id: number): Promise<ProductDto>{      
+   try{    
+const product = await this.db.product.findFirstOrThrow({
+          where: {id},
+          include: {        
+            ProductAttribute: {
+            include: {
+              Weight: true,
+              Price: true,
+              SizeProduct: true,          
+            },       
+          },
+          smaks: true,
+          additional: true,            
+          },
+        })        
+       return product
+      }
+    catch (error) {
+       throw new Error(`Error get product by Id:  ${error.message}`); 
+      }}
+
+async productPatch(body: PostProductDto){    
+ try {  
+  const product = await this.db.product.update({
+  where: { id: body.id },
+  data: {
+    name: body.name,
+    img: body.img,
+    description: body.description,  
+    ingredients: body.ingredients,     
+    category: body.categoryId ? { connect: { id: body.categoryId } } : undefined,
+    smaksId: body.smaksId ? { set: body.smaksId } : undefined,
+  additional: body.additional ? {
+    update: body.additional
+      .filter(a => a.id) // Відфільтруйте записи, які мають ідентифікатор
+      .map((a) => ({
+        where: { id: a.id }, // Оновити за ідентифікатором
+        data: { name: a.name, description: a.description }
+      })),
+    create: body.additional
+      .filter(a => !a.id) // Відфільтруйте записи без ідентифікатора
+      .map((a) => ({ name: a.name || null, description: a.description || null }))
+} : undefined,
+
+    subcategory: body.subcategoryId ? { connect: { id: body.subcategoryId } } : undefined,
+    brand: body.brandId ? { connect: { id: body.brandId } } : undefined,     
+    quantity: body.quantity,
+    expirationDate: body.expirationDate,
+    status: body.status ? { set: body.status } : undefined,
+    shippingInfo: body.shippingInfo,
+    logisticDetails: body.logisticDetails,
+    
   }
+});
 
+  return product;
+} catch (error) {
+  throw new HttpException(`Помилка при оновленні продукту: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+}
+}
 
-async productsAttribute(attribute: AttributeDto){
+async deleteAdditionalRecord(id: number){
+  try{
+       
+  //Пошук запису Additional за його ідентифікатором та ідентифікатором продукту
+    const additional = await this.db.additional.findFirst({ 
+      where: { 
+        AND: [
+          { id: id },          
+        ] 
+      } 
+    });
+    
+    // Перевірка, чи знайдено запис Additional
+    if (!additional) {
+      throw new Error(`Additional record with ID ${id}.`);
+    }
+    
+    // Видалення запису Additional
+    const deletedAdditional = await this.db.additional.delete({ where: { id: id } });
+    
+    return deletedAdditional;
+  }
+  catch(error){
+     throw new Error(`Error delete product or addition:  ${error.message}`);   
+  }
+}
+
+async deleteProduct(productId: number) {
+  try {   
+     
+    await this.db.productAttribute.findMany({ where: { productId: productId } });
+    
+    await this.db.productAttribute.deleteMany({ where: { productId: productId } });
+   
+    const product = await this.db.product.findUnique({ where: { id: productId } });
+
+    if (!product) {
+      throw new Error(`Product with ID ${productId} not found.`);
+    }
+   
+    const deletedProduct = await this.db.product.delete({ where: { id: productId } });
+
+    return deletedProduct;
+  } catch (error) {
+    throw new Error(`Error deleting product with dependencies: ${error.message}`);
+  }
+}
+
+//END ALL PRODUCT 
+
+async productsAttributeCreatePrice(attribute: AttributeDto){
       try {
       // Знайдемо продукт за його ідентифікатором
       const product = await this.db.product.findUnique({
@@ -119,27 +229,54 @@ async productsAttribute(attribute: AttributeDto){
       if (!product) {
         throw new Error('Product not found');
       }
-      const weightData = attribute.weight.map((w, index) => ({ weight: [w], unic: [attribute.unic[index]] }));
-      
-      const createdProductAttribute = await this.db.productAttribute.create({
-        data: {
-          productId: attribute.productId, // 1
-          Weight: {                     
-            create: weightData            
-          },
-          Price: {
-            create: attribute.price.map((p) => ({ price: [p], startDate: attribute.startDate, endDate: attribute.endDate })),
-          },
-          SizeProduct: {
-            create: {
-              size: attribute.size,
-            },
-          },
-          
+      return  await this.createProductAttributes(attribute);      
+    } catch (error) {      
+      throw new Error(`Error creating product attribute:  ${error.message}`);     
+    }
+}
+
+
+async productsAttributePatchPrice(attribute: AttributeDto){
+      try {
+      // Знайдемо продукт за його ідентифікатором
+      const product = await this.db.product.findUnique({
+        where: {
+          id: attribute.productId,
         },
       });
 
-      return createdProductAttribute
+      if (!product) {
+        throw new Error('Product not found');
+      }
+      const existingProductAttribute = await this.db.productAttribute.findFirst({
+        where: {
+          id: { in: attribute.id },
+          productId: attribute.productId,
+        },
+         include: {
+         Weight: true, // замініть на Weight, оскільки це поле вкладене в ProductAttribute
+      },
+      });
+
+      if (!existingProductAttribute) {
+        throw new Error('Product attribute not found');
+      }
+
+      const weightData = attribute.weight.map((w, index) => ({ where: { id: existingProductAttribute.Weight[index].id }, data: { weight: [w], unic: [attribute.unic[index]] } }));
+      
+      if (!attribute.id || attribute.id.length === 0) {
+      throw new BadRequestException('Id array must not be empty');
+      }
+      const updatedProductAttribute = await this.db.productAttribute.update({
+        where: { id: existingProductAttribute.id },
+        data: {
+          Weight: { updateMany: weightData },
+          Price: { update: attribute.price.map((p, index) => ({ where: { id: attribute.id![index] }, data: { price: [p], startDate: attribute.startDate, endDate: attribute.endDate } })) },
+          SizeProduct: { update: { size: attribute.size } },
+        },
+      });
+
+      return updatedProductAttribute;
     } catch (error) {      
       throw new Error(`Error creating product attribute:  ${error.message}`);     
     }
@@ -155,8 +292,33 @@ async productsWithSmak(smackId: number[]){
     });     
     return { success: true, products: productsWithSmak};
   }
+
+
+
+ async productsAttributePriceDelete(price: DeletePriceDto){
+      try {
+      // Знайдемо продукт за його ідентифікатором
+      const product = await this.db.product.findUnique({
+        where: {
+          id: price.productId,
+        },
+      });
+
+      if (!product) {
+        throw new Error('Product not found');
+      }
+    const numericIds = price.id.map(Number);     
+    await this.db.productAttribute.deleteMany({
+      where: {
+          productId: price.productId,
+    Weight: { some: { id: { in: numericIds } } },
+    Price: { some: { id: { in: numericIds } } },    
+      },
+    });
+      
+    } catch (error) {      
+      throw new Error(`Error creating product attribute:  ${error.message}`);     
+    }
+}   
+
 }
-
-
-    
-   

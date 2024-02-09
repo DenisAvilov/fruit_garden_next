@@ -1,190 +1,227 @@
 
 import { ApiProperty } from "@nestjs/swagger"
+import { IsString, IsNotEmpty, IsNumber, IsArray, IsOptional,  IsObject, IsDateString } from "class-validator";
 
-// import { Type } from "class-transformer";
-import { IsString, IsNotEmpty, IsNumber, IsArray, IsOptional, IsDateString, IsObject } from "class-validator";
 
 export class  AttributeDto {
+  @ApiProperty({type: [Number], description: 'Id array for price.'}) 
+  id?: number[] 
 
   //Weight
-  @ApiProperty({example: 1})
+  @ApiProperty({example: 1, description: 'Id продукту.'})
   @IsNumber()
   productId: number
 
-  @ApiProperty()
-  @IsArray()  
+  @ApiProperty({ type: [Number], description: 'Array of weights' })
+  @IsArray()
   weight: number[];
 
-  @ApiProperty()
+  @ApiProperty({ type: [String], description: 'Array of units (e.g., "гр.")' })
   @IsArray()
-  unic: string[]
-
+  @IsString({ each: true })
+  unic: string[];
 
   //Price
-  @ApiProperty()
+  @ApiProperty({description: 'Опис ціни з урохуванням коми.'})
   @IsArray()
   @IsNumber({}, { each: true })
   price: number[];
 
-  @ApiProperty()
-  // @ApiProperty()
-  @IsOptional()
+  @ApiProperty({ description: 'Start date in ISO format' })
   @IsDateString()
-  startDate?: string;
+  startDate: string;
 
-  @ApiProperty()
-  // @ApiProperty()
-  @IsOptional()
+  @ApiProperty({ description: 'End date in ISO format' })
   @IsDateString()
-  endDate?: string;
+  endDate: string;
 
   //Size
-  @ApiProperty()  
-  @IsString()  
+  @ApiProperty({ type: [String], description: 'Array of sizes' })
+  @IsArray()
+  @IsString({ each: true })
   size: string[];
 }
 
-export class  AttributesDto {
+export class  PatchAttributeDto {
 
-  @ApiProperty()
+  @ApiProperty({example: [1], description: 'Id array a price.'})  
+  id?: number[]
+
+  //Weight
+  @ApiProperty({example: 1, description: 'Id продукту.'})
   @IsNumber()
   productId: number
 
-  @ApiProperty()
+  @ApiProperty({ example: [500],type: [Number], description: 'Array of weights' })
   @IsArray()
-  @IsNumber()
   weight: number[];
 
-  @ApiProperty()
-  @IsString()
-  unic: string
-
-  @ApiProperty()
+  @ApiProperty({  example: ["гр."], type: [String], description: 'Array of units (e.g., "гр.")' })
   @IsArray()
-  @IsNumber()
+  @IsString({ each: true })
+  unic: string[];
+
+  //Price
+  @ApiProperty({example: [227], description: 'Опис ціни з урохуванням коми.'})
+  @IsArray()
+  @IsNumber({}, { each: true })
   price: number[];
 
-  @ApiProperty()
-  @IsString()
-  currency?: string;
+  @ApiProperty({ example: new Date().toISOString(), description: 'Start date in ISO format' })
+  @IsDateString()
+  startDate: string;
 
-  @ApiProperty()
-  @IsArray()  
+  @ApiProperty({ example: new Date().toISOString(), description: 'End date in ISO format' })
+  @IsDateString()
+  endDate: string;
+
+  //Size
+  @ApiProperty({  example: ["Middle"], type: [String], description: 'Array of sizes' })
+  @IsArray()
+  @IsString({ each: true })
   size: string[];
-
-  @ApiProperty()
-  @IsOptional()
-  // @IsDateString()
-  startDate?: Date;
 }
 
-
 export class Additional {  
-  @ApiProperty({example:'Смак печево'})
+  @ApiProperty({example: 1})
+  id: number
+  
+  @ApiProperty({example:'Смак печево'})  
   @IsString()
-  name?: string
+  name?: string | null;
 
-  @ApiProperty({example:'Шоколадний'})
+  @ApiProperty({example:'Шоколадний'}) 
   @IsString()
-  description?: string 
+  description?: string | null;
 }
 
 export class PostProductDto {
 
-  @ApiProperty({ type: Additional, isArray: true })   
-  additional?: Additional | Additional[]; 
+  @ApiProperty({example: 1})
+  id: number
 
-  @ApiProperty({example: 'Зефір класичний'})
+  @ApiProperty({
+  description: 'Назва продукту.',
+  example: 'Зефір класичний'})
   @IsNotEmpty()
   @IsString()
   name: string; 
 
   
-  @ApiProperty({example: 'Срок придатності 20 днів від дати виготевлення.'})
-  @IsOptional()  
-  expirationDate?: string;
+  @ApiProperty({
+  description: 'Дата закінчення ціни продукту',
+  example: 'Срок придатності 20 днів від дати виготевлення.'})
+  @IsOptional() 
+  @IsString() 
+  expirationDate: string | undefined
 
-  @ApiProperty({example: 'Продукт з ниским вмісту цукру, виготовлений з природних продуктах.'})
+  @ApiProperty({
+  description: 'Загальний опис продукту.', 
+  example: 'Продукт з ниским вмісту цукру, виготовлений з природних продуктах.'})
   @IsNotEmpty()
   @IsString()
   description: string;
 
-  @ApiProperty({example: 'Під заказ'})
+  @ApiProperty({
+  description: 'Статус наявності продукту.',
+  example: 'Під заказ'})
   @IsOptional()
   @IsString()
-  status?: string;
+  status?: string | null
 
-  @ApiProperty({ example: ['img1.jpg', 'img2.jpg'] })
+  @ApiProperty({
+  description: 'Зображення продукту.', 
+  example: ['img1.jpg', 'img2.jpg'] })
   @IsArray()
   @IsString({ each: true })
-  img: string[];
+  img: string[];  
 
-  
-
-  @ApiProperty({ example: 10 })
-  @IsOptional()
+  @ApiProperty({
+  description: 'Кількість продукту на складі.',
+  example: 10 }) 
   @IsNumber()
-  quantity?: number;
-   
-  @ApiProperty({ example: [1,2], required: false })  
-  @IsArray()
-  smaksId: number[];
+  quantity?: number | null
 
-  @ApiProperty({ example: 'Express shipping available' })
+  @ApiProperty({
+  description: 'Інформація щодо логістики продукту.',
+  example: 'Способи доставки' })
   @IsOptional()
   @IsString()
-  shippingInfo?: string;
+  shippingInfo?: string | null
 
-  @ApiProperty({ example: 'Деталі по логістике' })
+  @ApiProperty({
+  description: 'Статус доставки продукту.', 
+  example: 'Ваш заказ сьогодні виїхав до вас.' })
   @IsOptional()
   @IsString()
-  logisticDetails?: string;
+  logisticDetails?: string;  //видалити
 
-  @ApiProperty({ example: 1 })
+  @ApiProperty({
+  description: 'Індентифікатор категорії продукту.', 
+  example: 1 })
   @IsNotEmpty()
   @IsNumber()
   categoryId: number;
 
-  @ApiProperty({ example: 1 })
+  @ApiProperty({
+  description: 'Індентифікатор підкатегорії продукту.', 
+  example: 1 })
   @IsOptional()
   @IsNumber()
   subcategoryId?: number;
 
-  @ApiProperty({ example: 1 })
+  @ApiProperty({
+  description: 'Індентифікатор бренду продукту.',
+  example: 1 })
   @IsOptional()
   @IsNumber()
-  brandId?: number;
+  brandId?: number | null
 
-  @ApiProperty({ example: 'Состав продукту містить: наступне' })  
+  @ApiProperty({
+  description: 'Склад продукту.',
+  example: 'Состав продукту містить: наступне' })  
   @IsString()
   ingredients: string
 
-  @ApiProperty({ example: ['Comment 1', 'Comment 2'], required: false })
+  @ApiProperty({
+  description: 'Коментарі користувачів щодо продукту.',
+  example: ['Comment 1', 'Comment 2'], required: false })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   comments?: string[];
 
-  @ApiProperty({ example: 4.5, required: false })
+  @ApiProperty({
+  description: 'Коментарі користувачів щодо продукту.',
+  example: 4.5, required: false })
   @IsOptional()
   @IsNumber()
   rating?: number;
 
-  
-
-  // Додавання Ціни Ваги Розміру коробки 
   @ApiProperty({
-    example: {
-      weight: [0.5],
-      unic: ["гр."],
-      price: [150],
-      startDate: new Date().toISOString(),
-      endDate: new Date().toISOString(),
-      size: ['Small',],     
+  description: 'Перелік індентифікаторів смаків продукту.',
+  example: [1,2], required: false })  
+  @IsArray()  
+  @IsNumber({}, { each: true })
+  smaksId: number[];
+
+  @ApiProperty({
+  description: 'Опис парамертів ціни, ваги та пакування .',
+  example: {      
+      Weight: { weight: [500], unic: ['гр.'] },
+      Price: { price: [150], startDate: new Date().toISOString(), endDate: new Date().toISOString(), },
+      SizeProduct: { size: ['Small'], },
     },
   })
-  @IsObject()  
-  attribute: AttributeDto;
+  @IsObject()
+  productAttribute: {    
+    Weight: Pick<AttributeDto, 'weight' | 'unic'>;
+    Price: Pick<AttributeDto, 'price' | 'startDate' | 'endDate'>;
+    SizeProduct: Pick<AttributeDto, 'size'>;
+  };
+
+  @ApiProperty({example: [{name: 'Смак печево', description: 'Шоколадний'}] })   
+  additional?: Additional[];
 }
 
 

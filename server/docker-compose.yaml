@@ -1,16 +1,3 @@
-# version: '3.9'
-# services:
-#   db:
-#     image: postgres:latest
-#     restart: always
-#     environment:
-#       - POSTGRES_USER=postgres
-#       - POSTGRES_PASSWORD=Qwert113
-#     ports:
-#       - '5432:5432'
-#     volumes:
-#       - db:/var/lib/postgresql/data
-
 version: '3.9'
 services:
   db:
@@ -40,3 +27,6 @@ services:
 volumes:
   db:
   pgadmin:
+
+
+

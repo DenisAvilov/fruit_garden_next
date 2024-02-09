@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Res, UseGuards } from '@nestjs/common'
 import { AccountService } from './account.service'
-import { ApiOkResponse, ApiParam } from '@nestjs/swagger'
+import { ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger'
 import { AccountDto,  ContactDtoSW,  ContactDtoSWActivate,  PatchAccountDto, PatchSocialDto,  ProfileDto, SocialDto,} from './dto'
 import { CookieService } from 'src/auth/cookie.service'
 import { AuthGuard } from 'src/auth/auth.guard'
@@ -11,7 +11,7 @@ import { ContactService } from './contact.service'
 import { SocialService } from './social.service'
 import { Roles } from 'src/auth/roles.decorator'
 
-
+@ApiTags('account')
 @Controller('account')
 @UseGuards(AuthGuard) 
 export class AccountController {
@@ -30,7 +30,8 @@ export class AccountController {
    return await this.accountService.getAccount(session.userId)  
   }
 //GET CONTACT BY ID  endPoint
-  @Get(':id')   
+  @Get(':id') 
+  @Roles('ADMIN', 'USER')   
   @ApiParam({ name: 'id', description: 'ID of the user', example: 44 })
   @ApiOkResponse({
     type:  ProfileDto
@@ -42,6 +43,7 @@ export class AccountController {
   }
 //UPDATE PHONE CONTACT endPoint
   @Patch() 
+  @Roles('ADMIN', 'USER') 
   @ApiOkResponse({
     type: AccountDto
   })
@@ -58,7 +60,7 @@ export class AccountController {
  
 //DELETE CONTACT ID endPoint    
   @Delete(':id')  
-  @Roles('USER') 
+  @Roles('ADMIN', 'USER') 
   @HttpCode(HttpStatus.OK)
   @ApiParam({ name: 'id', description: 'ID of the user', example: 44 })  
   @ApiOkResponse() 
@@ -74,6 +76,7 @@ export class AccountController {
 
 //UPDATE PHONE CONTACT endPoint
  @Patch('patch-contact') 
+ @Roles('ADMIN', 'USER') 
  @ApiOkResponse({
     type: ContactDtoSW
   })
@@ -91,6 +94,7 @@ export class AccountController {
 
   //ACTIVATION EMAIL CONTACT endPoint
  @Patch('patch-contact-activate') 
+ @Roles('ADMIN', 'USER') 
  @ApiOkResponse({
     type: ContactDtoSWActivate
   })

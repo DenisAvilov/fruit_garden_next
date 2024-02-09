@@ -1,108 +1,127 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsArray, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString } from "class-validator";
-import {  AttributeDto } from "./postProductDto";
+import { IsArray, IsNotEmpty, IsNumber,  IsOptional, IsString } from "class-validator";
+import { PriceDto, ProductAttributeDto, SizeProductDto, WeightDto } from "./productAttributeDto";
 
 class Additional {  
-  @ApiProperty()
+  @ApiProperty({description: 'Назва додаткового поля'})  
   @IsString()
-  name?: string
+  name?: string | null;
 
-  @ApiProperty()
+  @ApiProperty({description: 'Опис додаткового поля'}) 
   @IsString()
-  description?: string 
+  description?: string  | null;
 }
 
 export class ProductDto {
 
-  @ApiProperty({ type: [Additional] })   
-  additional: Additional[]
+  @ApiProperty({ description: 'Номер продукту.' })
+  @IsNotEmpty()
+  @IsNumber()
+  id: number; 
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Назва продукту.' })
   @IsNotEmpty()
   @IsString()
   name: string; 
 
-  
-  @ApiProperty()
+  @ApiProperty({description: 'Дата закінчення ціни продукту'})
   @IsOptional()  
-  expirationDate?: string;
+  @IsString() 
+  expirationDate: string | null
 
-  @ApiProperty()
+  @ApiProperty({description: 'Загальний опис продукту.'})
   @IsNotEmpty()
   @IsString()
-  description: string;
+  description: string;  
 
-  @ApiProperty()
+  @ApiProperty({description: 'Статус наявності продукту.'})
   @IsOptional()
   @IsString()
-  status?: string;
+  status?: string | null  
 
-  @ApiProperty()
-  @IsArray()
-  @IsString()
-  smaks: string[]
-
-  @ApiProperty()
+  @ApiProperty({description: 'Зображення продукту.'})
   @IsArray()
   @IsString()
   img: string[];
 
-  
-
-  @ApiProperty()
+  @ApiProperty({description: 'Кількість продукту на складі.'})
   @IsOptional()
   @IsNumber()
-  quantity?: number;
+  quantity?: number | null
+
+  @ApiProperty({description: 'Інформація щодо логістики продукту.'})
+  @IsOptional()
+  @IsString()
+  shippingInfo?: string | null
    
-  @ApiProperty()  
-  @IsArray()
-  smaksId: number[];
+  // @ApiProperty({description: 'Перелік смаків продукту.'})
+  // @IsArray()
+  // @IsString()
+  // smaks: string[] | { id: number; name: string }[]
+  // smaks: string[] 
 
-  @ApiProperty()
+  @ApiProperty({description: 'Статус доставки продукту.'})
   @IsOptional()
   @IsString()
-  shippingInfo?: string;
+  logisticDetails?: string | null // видалити
 
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  logisticDetails?: string;
-
-  @ApiProperty()
+  @ApiProperty({description: 'Індентифікатор категорії продукту.'})
   @IsNotEmpty()
   @IsNumber()
   categoryId: number;
 
-  @ApiProperty()
+  @ApiProperty({description: 'Індентифікатор підкатегорії продукту.'})
   @IsOptional()
   @IsNumber()
-  subcategoryId?: number;
+  subcategoryId?: number | null
 
-  @ApiProperty()
+  @ApiProperty({description: 'Індентифікатор бренду продукту.'})
   @IsOptional()
   @IsNumber()
-  brandId?: number;
+  brandId?: number | null
 
-  @ApiProperty()  
+  @ApiProperty({description: 'Склад продукту.'})  
   @IsString()
   ingredients: string
 
-  @ApiProperty()
+  @ApiProperty({description: 'Коментарі користувачів щодо продукту.'})
   @IsOptional()
   @IsArray()
   @IsString()
   comments?: string[];
 
-  @ApiProperty()
+  @ApiProperty({description: 'Коментарі користувачів щодо продукту.'})
   @IsOptional()
   @IsNumber()
   rating?: number;
 
-   
-  @ApiProperty()
-  @IsObject()  
-  attribute: AttributeDto;
+  @ApiProperty({description: 'Перелік індентифікаторів смаків продукту.'})  
+  @IsArray()
+  @IsNumber()
+  smaksId: number[];
+
+  @ApiProperty({
+    description: 'Опис парамертів ціни, ваги та пакування .',
+    type: [ProductAttributeDto]
+    })  
+  ProductAttribute: ({
+    Weight: WeightDto[];
+    Price: PriceDto[];
+    SizeProduct: SizeProductDto | null;
+  })[];
+
+
+  @ApiProperty({example: [{name: null, description: null}] })   
+  additional?: Additional[]; 
+
 }
 
 
+export class DeletePriceDto{
+  @ApiProperty({ description: 'Product ID', example: 1 })
+  productId: number;
+
+  @ApiProperty({ description: 'Array of IDs', example: [2,3] })
+  id: string[];
+}
 
