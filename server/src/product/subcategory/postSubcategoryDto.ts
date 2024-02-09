@@ -9,3 +9,4 @@ export class PostSubcategoryDto {
   categoryId: number;
   
 }
+

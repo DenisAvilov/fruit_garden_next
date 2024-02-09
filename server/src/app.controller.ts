@@ -1,33 +1,18 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { Controller } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { DbService } from './db/db.service';
-// import { PrismaClient } from '@prisma/client';
-// const prisma = new PrismaClient();
+// import { ProductDto } from './product/productDto';
+// import { LimitPages } from './helpers/helpers';
+import { ProductService } from './product/product.service';
 
-// class HelloWorldDTO {
-//   @ApiProperty()
-//   message: string;
-// }
-
+@ApiTags()
 @Controller()
 export class AppController {
-  constructor(
-    private readonly appService: AppService,
+  constructor(    
     private dbService: DbService,
+    private productService: ProductService
   ) {}
+  
 
-  @Get()
-  @ApiOkResponse()
-  async getHello() {
-    const user = await this.dbService.user.findMany({      
-      include:{
-        account: true,
-        contact: true,
-        social: true
-      }
-    });    
-    return user
-  }
 }
-// prisma.$disconnect();
+

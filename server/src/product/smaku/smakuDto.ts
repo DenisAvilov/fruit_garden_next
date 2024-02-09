@@ -1,10 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { IsNumber, IsString } from "class-validator";
 
 export class SmaksDto {
-  @ApiProperty()
+  @ApiProperty({description: 'Номер смаку продукту.'})
+  @IsNumber()
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({description: 'Назва смаку продукту.'})
+  @IsString()
   name: string;
   
 }

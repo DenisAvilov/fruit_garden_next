@@ -10,7 +10,7 @@ export class SmakuService {
 
   ) {}
  
-   async createSmak(name: string, ): Promise<SmaksDto> {
+   async createSmak(name: string): Promise<SmaksDto> {
     const newSmak = await this.db.smaks.create({
       data: {
         name,        
@@ -19,9 +19,8 @@ export class SmakuService {
     return newSmak;
   }
 
-   async getSmaks():Promise<SmaksDto[]> {
-    const smak = await this.db.smaks.findMany();
-    return smak;
+   async getSmaks():Promise<SmaksDto[]> {  
+    return await this.db.smaks.findMany();     
   }
 
   async getSmakById(id: number): Promise<SmaksDto | null> {

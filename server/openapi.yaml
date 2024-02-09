@@ -1,0 +1,1026 @@
+openapi: 3.0.0
+paths:
+  /auth/sing-up:
+    post:
+      operationId: AuthController_singUp
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SingUpBodyDto'
+      responses:
+        '201':
+          description: ''
+  /auth/sing-in:
+    post:
+      operationId: AuthController_singIn
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SingInBodyDto'
+      responses:
+        '200':
+          description: ''
+  /auth/sing-out:
+    post:
+      operationId: AuthController_singOut
+      parameters: []
+      responses:
+        '200':
+          description: ''
+  /auth/session:
+    get:
+      operationId: AuthController_getSessionInfo
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSessionInfoDto'
+  /auth/{activeLink}:
+    get:
+      operationId: AuthController_activateMail
+      parameters:
+        - name: activeLink
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivationLink'
+  /account:
+    get:
+      operationId: AccountController_getAccount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountDto'
+    patch:
+      operationId: AccountController_patchAccount
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchAccountDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountDto'
+  /account/{id}:
+    get:
+      operationId: AccountController_getAccountInfo
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID of the user
+          example: 44
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileDto'
+    delete:
+      operationId: AccountController_deleteUser
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID of the user
+          example: 44
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+  /account/patch-contact:
+    patch:
+      operationId: AccountController_patchContact
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactDtoSW'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactDtoSW'
+  /account/patch-contact-activate:
+    patch:
+      operationId: AccountController_patchVerifyPhone
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactDtoSWActivate'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactDtoSWActivate'
+  /account/patch-social:
+    patch:
+      operationId: AccountController_patchSocial
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchSocialDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SocialDto'
+  /product/{id}:
+    get:
+      operationId: ProductController_productId
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID Користувача
+          example: 1
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDto'
+  /product/create:
+    post:
+      operationId: ProductController_productCreate
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostProductDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDto'
+  /product/create-price:
+    post:
+      operationId: ProductController_priceCreate
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttributeDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttributeDto'
+  /product/smak/{id}:
+    get:
+      operationId: ProductController_productsWithSmak
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID of the user
+          example: 1
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDto'
+  /product/create-category:
+    post:
+      operationId: ProductController_categoryCreate
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostCategoryDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryDto'
+  /product/create-subcategory:
+    post:
+      operationId: ProductController_subcategoryCreate
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostSubcategoryDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubcategoryDto'
+  /product/create-brand:
+    post:
+      operationId: ProductController_brandCreate
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBrandDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrandDto'
+  /product/create-smak:
+    post:
+      operationId: ProductController_smakCreate
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostSmaksDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmaksDto'
+  /product/get-smak:
+    post:
+      operationId: ProductController_getSmaks
+      parameters: []
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmaksDto'
+  /product/patch-smak:
+    patch:
+      operationId: ProductController_smackUpdate
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchSmakDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmaksDto'
+  /product/create-rating:
+    post:
+      operationId: ProductController_ratingCreate
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostRatingDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RatingDto'
+info:
+  title: Інтернет магазин зефірна магія.
+  description: Опис всіх API.
+  version: '1.0'
+  contact: {}
+tags:
+  - name: auth
+    description: 'запити повязані з авторізциї. '
+  - name: account
+    description: запити щодо акаунта користувача.
+  - name: product
+    description: запити щодо продуктів магазину.
+servers: []
+components:
+  schemas:
+    SingUpBodyDto:
+      type: object
+      properties:
+        email:
+          type: string
+          example: avilovd.a@gmail.com
+        password:
+          type: string
+          example: '1234'
+      required:
+        - email
+        - password
+    SingInBodyDto:
+      type: object
+      properties:
+        email:
+          type: string
+          example: avilovd.a@gmail.com
+        password:
+          type: string
+          example: '1234'
+      required:
+        - email
+        - password
+    GetSessionInfoDto:
+      type: object
+      properties:
+        userId:
+          type: number
+        email:
+          type: string
+        isActivated:
+          type: boolean
+        role:
+          type: string
+        iat:
+          type: number
+        exp:
+          type: number
+      required:
+        - userId
+        - email
+        - isActivated
+        - role
+        - iat
+        - exp
+    ActivationLink:
+      type: object
+      properties:
+        activationLink:
+          type: string
+      required:
+        - activationLink
+    AccountDto:
+      type: object
+      properties:
+        id:
+          type: number
+        userId:
+          type: number
+        name:
+          type: object
+          example: Denis
+        lastName:
+          type: object
+          example: Avilov
+        img:
+          type: object
+          example: https://www.google.com=images
+      required:
+        - id
+        - userId
+        - name
+        - lastName
+        - img
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: number
+        email:
+          type: string
+        role:
+          type: string
+        hash:
+          type: string
+        salt:
+          type: string
+        isActivated:
+          type: boolean
+        activationLink:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - email
+        - role
+        - hash
+        - salt
+        - isActivated
+        - activationLink
+        - createdAt
+    ProfileDto:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserDto'
+        account:
+          type: object
+        contact:
+          type: object
+        social:
+          type: object
+      required:
+        - user
+        - account
+        - contact
+        - social
+    PatchAccountDto:
+      type: object
+      properties:
+        name:
+          type: object
+          example: Denis
+        lastName:
+          type: object
+          example: Avilov
+        img:
+          type: object
+          example: https://www.google.com/images
+      required:
+        - name
+        - lastName
+        - img
+    ContactDtoSW:
+      type: object
+      properties:
+        phone:
+          type: object
+          example: '+380506195452'
+      required:
+        - phone
+    ContactDtoSWActivate:
+      type: object
+      properties:
+        activationLink:
+          type: string
+          example: '1234'
+      required:
+        - activationLink
+    PatchSocialDto:
+      type: object
+      properties:
+        fb:
+          type: string
+          example: facebook.com/user
+        instagram:
+          type: string
+          example: instagram.com/user
+        telegram:
+          type: string
+          example: t.me/user
+      required:
+        - fb
+        - instagram
+        - telegram
+    SocialDto:
+      type: object
+      properties:
+        fb:
+          type: object
+          example: http//:fb
+        instagram:
+          type: object
+          example: http//:instagram
+        telegram:
+          type: object
+          example: http//:telegram
+        id:
+          type: number
+        userId:
+          type: number
+      required:
+        - fb
+        - instagram
+        - telegram
+        - id
+        - userId
+    WeightDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Ідентифікатор ваги
+        weight:
+          description: Маса продукту
+          type: array
+          items:
+            type: string
+        unic:
+          description: Одиниці виміру
+          type: array
+          items:
+            type: string
+        weightId:
+          type: number
+          description: Ідентифікатор ваги до якого продукту відноситься
+      required:
+        - id
+        - weight
+        - unic
+        - weightId
+    PriceDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Ідентифікатор ціни
+        price:
+          description: Масив значень цін
+          type: array
+          items:
+            type: string
+        startDate:
+          type: object
+          description: Дата початку дії ціни
+        endDate:
+          type: object
+          description: Дата завершення дії ціни
+        priceId:
+          type: number
+          description: Ідентифікатор ціни
+      required:
+        - id
+        - price
+        - startDate
+        - endDate
+        - priceId
+    SizeProductDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Ідентифікатор розміру продукту
+        size:
+          description: Розмір продукту
+          type: array
+          items:
+            type: string
+        sizeId:
+          type: number
+          description: Ідентифікатор розміру продукту
+      required:
+        - id
+        - size
+        - sizeId
+    ProductAttributeDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Індефікатор Attribute.
+        productId:
+          type: number
+          description: Індефікатор продукту.
+        Weight:
+          description: Вага продукту
+          allOf:
+            - $ref: '#/components/schemas/WeightDto'
+        Price:
+          description: Цінові атрибути
+          type: array
+          items:
+            $ref: '#/components/schemas/PriceDto'
+        sizeProduct:
+          description: Інформація про розмір продукту або null, якщо немає розміру
+          allOf:
+            - $ref: '#/components/schemas/SizeProductDto'
+      required:
+        - id
+        - productId
+        - Weight
+        - Price
+        - sizeProduct
+    ProductDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Назва продукту.
+        expirationDate:
+          type: object
+          description: Дата закінчення ціни продукту
+        description:
+          type: string
+          description: Загальний опис продукту.
+        status:
+          type: object
+          description: Статус наявності продукту.
+        img:
+          description: Зображення продукту.
+          type: array
+          items:
+            type: string
+        quantity:
+          type: object
+          description: Кількість продукту на складі.
+        shippingInfo:
+          type: object
+          description: Інформація щодо логістики продукту.
+        logisticDetails:
+          type: object
+          description: Статус доставки продукту.
+        categoryId:
+          type: number
+          description: Індентифікатор категорії продукту.
+        subcategoryId:
+          type: object
+          description: Індентифікатор підкатегорії продукту.
+        brandId:
+          type: object
+          description: Індентифікатор бренду продукту.
+        ingredients:
+          type: string
+          description: Склад продукту.
+        comments:
+          description: Коментарі користувачів щодо продукту.
+          type: array
+          items:
+            type: string
+        rating:
+          type: number
+          description: Коментарі користувачів щодо продукту.
+        smaksId:
+          description: Перелік індентифікаторів смаків продукту.
+          type: array
+          items:
+            type: string
+        ProductAttribute:
+          description: Опис парамертів ціни, ваги та пакування .
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductAttributeDto'
+        additional:
+          example:
+            - name: null
+              description: null
+          type: array
+          items:
+            type: string
+      required:
+        - name
+        - expirationDate
+        - description
+        - status
+        - img
+        - quantity
+        - shippingInfo
+        - logisticDetails
+        - categoryId
+        - subcategoryId
+        - brandId
+        - ingredients
+        - comments
+        - rating
+        - smaksId
+        - ProductAttribute
+        - additional
+    PostProductDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Назва продукту.
+          example: Зефір класичний
+        expirationDate:
+          type: object
+          description: Дата закінчення ціни продукту
+          example: Срок придатності 20 днів від дати виготевлення.
+        description:
+          type: string
+          description: Загальний опис продукту.
+          example: Продукт з ниским вмісту цукру, виготовлений з природних продуктах.
+        status:
+          type: object
+          description: Статус наявності продукту.
+          example: Під заказ
+        img:
+          description: Зображення продукту.
+          example:
+            - img1.jpg
+            - img2.jpg
+          type: array
+          items:
+            type: string
+        quantity:
+          type: object
+          description: Кількість продукту на складі.
+          example: 10
+        shippingInfo:
+          type: object
+          description: Інформація щодо логістики продукту.
+          example: Способи доставки
+        logisticDetails:
+          type: string
+          description: Статус доставки продукту.
+          example: Ваш заказ сьогодні виїхав до вас.
+        categoryId:
+          type: number
+          description: Індентифікатор категорії продукту.
+          example: 1
+        subcategoryId:
+          type: number
+          description: Індентифікатор підкатегорії продукту.
+          example: 1
+        brandId:
+          type: object
+          description: Індентифікатор бренду продукту.
+          example: 1
+        ingredients:
+          type: string
+          description: Склад продукту.
+          example: 'Состав продукту містить: наступне'
+        comments:
+          description: Коментарі користувачів щодо продукту.
+          example:
+            - Comment 1
+            - Comment 2
+          type: array
+          items:
+            type: string
+        rating:
+          type: number
+          description: Коментарі користувачів щодо продукту.
+          example: 4.5
+        smaksId:
+          description: Перелік індентифікаторів смаків продукту.
+          example:
+            - 1
+            - 2
+          type: array
+          items:
+            type: string
+        productAttribute:
+          type: object
+          description: Опис парамертів ціни, ваги та пакування .
+          example:
+            Weight:
+              weight:
+                - 500
+              unic:
+                - гр.
+            Price:
+              price:
+                - 150
+              startDate: '2024-01-08T14:46:44.226Z'
+              endDate: '2024-01-08T14:46:44.227Z'
+            SizeProduct:
+              size:
+                - Small
+        additional:
+          example:
+            - name: Смак печево
+              description: Шоколадний
+          type: array
+          items:
+            type: string
+      required:
+        - name
+        - expirationDate
+        - description
+        - status
+        - img
+        - quantity
+        - shippingInfo
+        - logisticDetails
+        - categoryId
+        - subcategoryId
+        - brandId
+        - ingredients
+        - productAttribute
+        - additional
+    AttributeDto:
+      type: object
+      properties:
+        productId:
+          type: number
+          example: 1
+          description: Id продукту.
+        weight:
+          description: Варіації ваги одного продукту.
+          type: array
+          items:
+            type: string
+        unic:
+          description: Варіації одиниці виміру ваги одного продукту.
+          type: array
+          items:
+            type: string
+        price:
+          type: array
+          items:
+            type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+        size:
+          type: array
+          items:
+            type: string
+      required:
+        - productId
+        - weight
+        - unic
+        - price
+        - startDate
+        - endDate
+        - size
+    PostCategoryDto:
+      type: object
+      properties:
+        img:
+          type: string
+          example: foto-category
+        name:
+          type: string
+          example: Зефір
+      required:
+        - img
+        - name
+    CategoryDto:
+      type: object
+      properties:
+        id:
+          type: number
+        img:
+          type: string
+        name:
+          type: string
+      required:
+        - id
+        - img
+        - name
+    PostSubcategoryDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Різдвяні набори
+        categoryId:
+          type: number
+      required:
+        - name
+        - categoryId
+    SubcategoryDto:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        categoryId:
+          type: number
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - categoryId
+        - createdAt
+    PostBrandDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Зефірна магія
+      required:
+        - name
+    BrandDto:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+      required:
+        - id
+        - name
+    PostSmaksDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Вішня, Лемон, Груша
+      required:
+        - name
+    SmaksDto:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+      required:
+        - id
+        - name
+    PatchSmakDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Id смаку який потрібно обновити
+          example: 1
+        newName:
+          type: string
+          description: Перелік смаків які потрібно змінити
+          example: Вішня, Лемон, Груша
+        newProductId:
+          type: object
+          description: Id продукту до якого потрібно додати цей смак
+          example: 1
+      required:
+        - id
+        - newName
+        - newProductId
+    PostRatingDto:
+      type: object
+      properties:
+        value:
+          type: number
+          example: 1
+        productId:
+          type: number
+        userId:
+          type: number
+      required:
+        - value
+        - productId
+        - userId
+    RatingDto:
+      type: object
+      properties:
+        id:
+          type: number
+        value:
+          type: number
+        productId:
+          type: object
+        userId:
+          type: number
+      required:
+        - id
+        - value
+        - productId
+        - userId
