@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Res, UseGuards } from '@nestjs/common'
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch,  Query,  Res,  UseGuards } from '@nestjs/common'
 import { AccountService } from './account.service'
-import { ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger'
-import { AccountDto,  ContactDtoSW,  ContactDtoSWActivate,  PatchAccountDto, PatchSocialDto,  ProfileDto, SocialDto,} from './dto'
+import { ApiOkResponse, ApiParam,  ApiQuery,  ApiTags } from '@nestjs/swagger'
+import { AccountAndRoleDto, AccountDto,     ContactDtoSW,  ContactDtoSWActivate,  PatchAccountDto,  PatchSocialDto,  SocialDto, UserDto, UserRole,} from './dto'
 import { CookieService } from 'src/auth/cookie.service'
 import { AuthGuard } from 'src/auth/auth.guard'
 import { SessionInfo } from 'src/auth/session-info.decorator'
@@ -23,58 +23,78 @@ export class AccountController {
     ){}
 
   @Get()
+  @Roles('ADMIN','USER') 
   @ApiOkResponse({
     type: AccountDto
   })
- async getAccount(@SessionInfo() session: GetSessionInfoDto):Promise<AccountDto>{
-   return await this.accountService.getAccount(session.userId)  
+  
+ async getAccount(@SessionInfo() session: GetSessionInfoDto):Promise<AccountDto[]>{
+   return await this.accountService.getAccount(session.role, session.userId)  
   }
+
+ 
 //GET CONTACT BY ID  endPoint
   @Get(':id') 
   @Roles('ADMIN', 'USER')   
   @ApiParam({ name: 'id', description: 'ID of the user', example: 44 })
   @ApiOkResponse({
-    type:  ProfileDto
+    type:  UserDto
   })
-  async getAccountInfo(       
+  async getAccountInfo(
+    @SessionInfo() session: GetSessionInfoDto,      
     @Param('id') id: string    
-  ):Promise<ProfileDto>{     
-    return await this.accountService.getAccountInfo(parseInt(id, 10))
+  ):Promise<UserDto[]>{     
+    return await this.accountService.getAccountInfo(parseInt(id, 10), session.role, session.userId)
   }
-//UPDATE PHONE CONTACT endPoint
-  @Patch() 
+
+  
+  @Patch(':id') 
   @Roles('ADMIN', 'USER') 
   @ApiOkResponse({
     type: AccountDto
   })
+  @ApiQuery({ name: 'role', enum: UserRole, required: false, description: 'Визначити нову роль користувача.' })  
+  @ApiParam({ name: 'id', description: 'Отримати користувача по его ID', example: 1, required: false})   
   async patchAccount(
-    @Body() body: PatchAccountDto, 
+    @Body() body: PatchAccountDto,
+    @Query('role') role: UserRole,    
+    @Param('id', ParseIntPipe) id: number,
     @SessionInfo() session: GetSessionInfoDto
-    ):Promise<AccountDto>{
+    ):Promise<AccountAndRoleDto>{      
       const account = await this.accountService.patchAccount(
+        id,
         session.userId,
-        body
+        body,
+        session.role,
+        role
         )
         return account
     }
  
-//DELETE CONTACT ID endPoint    
+   
   @Delete(':id')  
   @Roles('ADMIN', 'USER') 
   @HttpCode(HttpStatus.OK)
-  @ApiParam({ name: 'id', description: 'ID of the user', example: 44 })  
+  @ApiParam({ name: 'id', description: 'ID of the user', example: 1 })  
   @ApiOkResponse() 
   async deleteUser(       
     @Param('id') id: string, 
     @Res({passthrough: true}) res: Response, 
     @SessionInfo() session: GetSessionInfoDto  
   ){            
-   const userDelete =  await this.accountService.deleteUser(parseInt(id, 10), session.userId)
-     this.cookieService.removeToken(res)  
-   return userDelete
+   try {
+    const userDelete = await this.accountService.deleteUser(parseInt(id, 10), session.role, session.userId);
+    if (!(userDelete instanceof BadRequestException)  && session.role === 'USER') {     
+    this.cookieService.removeToken(res);
+  }
+  return userDelete;   
+  } catch (error) {  
+    return error; 
+  }
   }
 
 //UPDATE PHONE CONTACT endPoint
+
  @Patch('patch-contact') 
  @Roles('ADMIN', 'USER') 
  @ApiOkResponse({
@@ -126,5 +146,6 @@ export class AccountController {
     }
 
 }
+
 
 

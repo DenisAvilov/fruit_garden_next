@@ -26,7 +26,7 @@ export class AuthService {
     const hash = this.passwordService.getHash(password, salt)    
     const profile =  await this.userService.create(email, salt, hash)
      
-    await this.mailService.sendActivationMailLink(email, profile.user.activationLink)
+    // await this.mailService.sendActivationMailLink(email, profile.user.activationLink)
     const tokens  = await this.tokenService.generateToken({
     userId: profile.user.userId,
     email: profile.user.email,
