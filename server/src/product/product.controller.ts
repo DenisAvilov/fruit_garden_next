@@ -139,8 +139,6 @@ async additionDelete(@Param('id', ParseIntPipe) id: number) {
 @Roles('ADMIN')
 async productDelete(@Param('id', ParseIntPipe) id: number) { 
   try {          
-     // Виклик сервісного методу для видалення всього продукту
-      console.log(id)
       await this.productService.deleteProduct(id);
       return { message: 'Продукт був успішно видалений' };
    

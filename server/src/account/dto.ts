@@ -1,6 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsBoolean, IsOptional } from "class-validator";
 
+
+export enum UserRole {
+  Admin = 'ADMIN', 
+  User = 'USER',
+}
+
 export class UserDto {
   @ApiProperty()
   id: number
@@ -11,10 +17,10 @@ export class UserDto {
   @ApiProperty()
   role: string
   
-  @ApiProperty()
+  @ApiProperty({ type: String, maxLength: 255 })
   hash: string
 
-  @ApiProperty()
+  @ApiProperty({ type: String, maxLength: 255 })
   salt: string
 
   @ApiProperty()
@@ -50,6 +56,8 @@ export class AccountDto {
   example: 'https://www.google.com=images'
   })
   img: string | null
+
+
 }
 
 export class ContactDtoSW {
@@ -101,6 +109,15 @@ export class SocialDto {
   userId: number 
 }
 
+export class AccountAndRoleDto{
+  @ApiProperty()
+  user?: UserDto;
+
+  @ApiProperty()
+  account: AccountDto | null;
+} 
+
+
 export class ProfileDto {
   @ApiProperty()
   user?: UserDto;
@@ -115,24 +132,19 @@ export class ProfileDto {
   social: SocialDto | null;
 }
 
-export class PatchAccountDto {      
- 
-  @ApiProperty({
-  example: 'Denis'
-  })
+export class PatchAccountDto {    
+
+  @ApiProperty({example: 'Denis'})
   name: string | null
 
-  @ApiProperty({
-  example: 'Avilov'
-  })
-  lastName?: string | null
+  @ApiProperty({example: 'Avilov'})
+  lastName: string | null
 
-  @ApiProperty({
-  example: 'https://www.google.com/images'
-  })
+  @ApiProperty({example: 'https://www.google.com/images'})
   @IsOptional()
   img: string  | null
 }
+
 
 export class PatchContactDto {
   @ApiProperty({ example: '+380506195452' })
