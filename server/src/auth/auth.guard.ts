@@ -22,7 +22,7 @@ export class AuthGuard implements CanActivate {
     req['session'] = sessionInfo
     req['roles'] = sessionInfo.role;   
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
-     console.log('Roles: ', roles ) 
+    
     
       if (!roles || roles.length === 0) {
         // Якщо ролі не визначено, дозволяємо доступ

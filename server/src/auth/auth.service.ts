@@ -4,6 +4,8 @@ import { PasswordService } from './password.service';
 import { TokenService } from './token.service';
 import { UserDTO } from 'src/users/user-dto';
 import { MailService } from './mail.service';
+import { Role } from '@prisma/client';
+
 
 @Injectable()
 export class AuthService {
@@ -23,8 +25,15 @@ export class AuthService {
       throw new BadRequestException({type: 'така почта вже існує'})
       }    
     const salt = this.passwordService.getSalt()
-    const hash = this.passwordService.getHash(password, salt)    
-    const profile =  await this.userService.create(email, salt, hash)
+    const hash = this.passwordService.getHash(password, salt) 
+    
+     // Отримуємо кількість користувачів у базі
+    const userCount = await this.userService.count();
+
+    // Визначаємо роль для нового користувача
+    const role: Role = userCount === 0 ? Role.ADMIN : Role.USER;
+
+    const profile =  await this.userService.create(email, salt, hash, role)
      
     // await this.mailService.sendActivationMailLink(email, profile.user.activationLink)
     const tokens  = await this.tokenService.generateToken({

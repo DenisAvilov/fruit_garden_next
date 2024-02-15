@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { mobizon } from 'mobizon-node'
 
 @Injectable()
@@ -10,19 +10,15 @@ export class MobizonService {
       format: 'json',
     });
   }
-
-
   async sendSms(recipient: string, text: string) {
     try {
-      const sendSms = await mobizon.sendSms({
+       await mobizon.sendSms({
         recipient,
         from: '',
         text,
-      });
-      console.log('SMS відправлено:', sendSms);
+      });     
     } catch (error) {
-      console.error('Помилка відправлення SMS:', error);
-      throw error;
+       throw new BadRequestException({type: `Помилка відправлення SMS:${error}`})      
     }
   }
 }
