@@ -1,7 +1,10 @@
+import { Role } from "@prisma/client"
+
+
 export class UserDTO{
   userId: number
   email : string
-  role: string
+  role: Role
   isActivated: boolean
   activationLink: string
     constructor(
@@ -9,7 +12,7 @@ export class UserDTO{
       id: number,
       email: string, 
       isActivated: boolean, 
-      role: string
+      role: Role,
       activationLink: string  
     }){
     this.userId = model.id

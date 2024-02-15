@@ -1,7 +1,7 @@
 import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch,  Query,  Res,  UseGuards } from '@nestjs/common'
 import { AccountService } from './account.service'
 import { ApiOkResponse, ApiParam,  ApiQuery,  ApiTags } from '@nestjs/swagger'
-import { AccountAndRoleDto, AccountDto,     ContactDtoSW,  ContactDtoSWActivate,  PatchAccountDto,  PatchSocialDto,  SocialDto, UserDto, UserRole,} from './dto'
+import { AccountAndRoleDto, AccountDto,     ContactDtoSW,  ContactDtoSWActivate,  PatchAccountDto,  PatchSocialDto,  SocialDto, UserDto} from './dto'
 import { CookieService } from 'src/auth/cookie.service'
 import { AuthGuard } from 'src/auth/auth.guard'
 import { SessionInfo } from 'src/auth/session-info.decorator'
@@ -10,6 +10,7 @@ import { Response } from 'express'
 import { ContactService } from './contact.service'
 import { SocialService } from './social.service'
 import { Roles } from 'src/auth/roles.decorator'
+import { Role } from '@prisma/client'
 
 @ApiTags('account')
 @Controller('account')
@@ -47,17 +48,33 @@ export class AccountController {
     return await this.accountService.getAccountInfo(parseInt(id, 10), session.role, session.userId)
   }
 
+  @Patch() 
+  @Roles('ADMIN') 
+  @ApiOkResponse({
+    type: AccountDto
+  })  
+  async patchAccountAdmin(
+    @Body() body: PatchAccountDto,   
+    @SessionInfo() session: GetSessionInfoDto
+    ):Promise<AccountAndRoleDto>{      
+      const account = await this.accountService.patchAccountAdmin(
+        session.userId,
+        body,
+        session.role,        
+        )
+        return account
+    }
   
   @Patch(':id') 
   @Roles('ADMIN', 'USER') 
   @ApiOkResponse({
     type: AccountDto
   })
-  @ApiQuery({ name: 'role', enum: UserRole, required: false, description: 'Визначити нову роль користувача.' })  
+  @ApiQuery({ name: 'role', enum: Role, required: false, description: 'Визначити нову роль користувача.' })  
   @ApiParam({ name: 'id', description: 'Отримати користувача по его ID', example: 1, required: false})   
   async patchAccount(
     @Body() body: PatchAccountDto,
-    @Query('role') role: UserRole,    
+    @Query('role') role: Role,    
     @Param('id', ParseIntPipe) id: number,
     @SessionInfo() session: GetSessionInfoDto
     ):Promise<AccountAndRoleDto>{      
@@ -72,6 +89,8 @@ export class AccountController {
     }
  
    
+ 
+
   @Delete(':id')  
   @Roles('ADMIN', 'USER') 
   @HttpCode(HttpStatus.OK)

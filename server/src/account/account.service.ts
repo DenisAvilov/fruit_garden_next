@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, } from '@nestjs/common';
-import { AccountAndRoleDto, AccountDto, PatchAccountDto, UserDto, UserRole } from './dto';
+import { AccountAndRoleDto, AccountDto, PatchAccountDto, UserDto} from './dto';
 import { DbService } from 'src/db/db.service';
+import { Role } from '@prisma/client';
 
 
 
@@ -67,12 +68,39 @@ async getAccountInfo(id: number, sessionRoles: string, userId: number): Promise<
   }
  }
  
+async patchAccountAdmin(  
+  sessionId: number,
+  body: PatchAccountDto,
+  sessionRoles: string,  
+  ):Promise<AccountAndRoleDto>{
+  
+ try{
+  let account 
+    if (sessionRoles === 'ADMIN') {    
+      const { name, lastName, img } = body;      
+         await this.db.account.update({
+          where: { userId: sessionId },
+          data: {
+            name: name,
+            lastName: lastName,
+            img: img
+          }
+        });
+         account = { ...account, ...{ account: body } };            
+      }    
+    return account;
+ }
+ catch(error){
+  return error
+ }
+ }
+
 async patchAccount(
   userId: number,
   sessionId: number,
   body: PatchAccountDto,
   sessionRoles: string,
-  role: UserRole,
+  role: Role,
   ):Promise<AccountAndRoleDto>{
   
  try{
