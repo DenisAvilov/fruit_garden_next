@@ -48,6 +48,36 @@ export class ProductController {
    private ratingService: RatingService,  
  ){}  
 
+
+@Get('get-brand')
+@Public()
+@ApiOkResponse({description: 'Назва бренду'})
+ async brandGet():Promise<BrandDto[]>{ 
+ return   await  this.brandService.getBrand()  
+ }
+
+@Get('get-category')
+@Public()
+@ApiOkResponse({ type: CategoryDto })
+ async categoryGet(){
+ return await  this.categoryService.getCategory()  
+ }
+
+@Get('get-subcategory')
+@Public()
+@ApiOkResponse({ type: SubcategoryDto })
+ async subcategoryGet(){
+ return await  this.subcategoryService.getSubcategory()  
+ }
+
+@Get('smaks')
+@Public()
+@ApiOkResponse({type: SmaksDto, description: 'Отримуємо всі смаки'})  
+ async getSmaks():Promise<SmaksDto[]>{
+  return await this.smakService.getSmaks()
+ }
+
+
 // Product Start
 @Get('/:id')
 @Public()
@@ -97,6 +127,7 @@ async getAllProduct(
 
   return products;
 }
+
 
 
 @Post('create')
@@ -170,13 +201,6 @@ async productDelete(@Param('id', ParseIntPipe) id: number) {
 
 //Category Start
 
-@Get('get-category')
-@Public()
-@ApiOkResponse({ type: CategoryDto })
- async categoryGet(){
- return await  this.categoryService.getCategory()  
- }
-
 @Post('create-category')
 @Roles('ADMIN')
 @ApiCreatedResponse({ type: CategoryDto })
@@ -199,12 +223,7 @@ async productDelete(@Param('id', ParseIntPipe) id: number) {
  }
 
 //Category End
-@Get('get-subcategory')
-@Public()
-@ApiOkResponse({ type: SubcategoryDto })
- async subcategoryGet(){
- return await  this.subcategoryService.getSubcategory()  
- }
+
 
 @Post('create-subcategory')
 @Roles('ADMIN')
@@ -230,12 +249,6 @@ async productDelete(@Param('id', ParseIntPipe) id: number) {
 // SubCategory END
 
 // Brand Start
-@Get('get-brand')
-@Public()
-@ApiOkResponse({ type: BrandDto })
- async brandGet():Promise<BrandDto[]>{
- return   await  this.brandService.getBrand()  
- }
 
 @Post('create-brand')
 @Roles('ADMIN')
@@ -260,12 +273,7 @@ async productDelete(@Param('id', ParseIntPipe) id: number) {
 // Brand End
 
 // Smaks Start
-@Get('smaks')
-@Public()
-@ApiOkResponse({type: SmaksDto, description: 'Отримуємо всі смаки'})  
- async getSmaks():Promise<SmaksDto[]>{
-  return await this.smakService.getSmaks()
- }
+
 
 @Post('create-smak')
 @Roles('ADMIN')
