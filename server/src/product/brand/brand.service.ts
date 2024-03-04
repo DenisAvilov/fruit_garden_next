@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
 import { BrandDto, PatchBrandDto, PostBrandDto } from './branDto';
 
@@ -10,11 +10,15 @@ export class BrandService {
 
   async getBrand():Promise<BrandDto[]>{
    return  await this.bd.brand.findMany() 
+ 
 }
 
   async createBrand(data: PostBrandDto):Promise<BrandDto>{
   const { name } = data;
-
+  const candidate =  await this.bd.brand.findUnique({where: {name}})
+  if(candidate){
+    throw new BadRequestException({type: 'Бренд з такою назвою вже існує'})
+  }
   const brand = await this.bd.brand.create(
     {
       data: {        

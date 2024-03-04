@@ -6,6 +6,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { AccountModule } from './account/account.module';
 import { ProductModule } from './product/product.module';
+import { BasketModule } from './basket/basket.module';
 
 
 async function bootstrap() {
@@ -51,6 +52,20 @@ async function bootstrap() {
   SwaggerModule.setup('api/product', app, product);
   
 
+ const basketOptions = globalOptions
+    .setTitle('Карзина на сайту.')
+    .setDescription('Опис API корзини користувача.')
+    .setVersion('1.0')
+    .addTag('basket', 'запити щодо карзини корестувачів.')
+    .build();
+
+  const basket = SwaggerModule.createDocument(app, basketOptions, {
+    include: [BasketModule],
+    // ignoreGlobalPrefix: false,
+  });
+  SwaggerModule.setup('api/basket', app, basket);
+
+
   const config = globalOptions
     .setTitle('Інтернет магазин зефірна магія.')
     .setDescription('Опис всіх API.')
@@ -58,7 +73,7 @@ async function bootstrap() {
     // .addTag('', 'запити головної сторінки магазину.')
     .build();
   const appDocument = SwaggerModule.createDocument(app, config, {
-    include: [AppModule, AuthModule, AccountModule, ProductModule],
+    include: [AppModule, AuthModule, AccountModule, ProductModule, BasketModule],
   });
 
   SwaggerModule.setup('api', app, appDocument, {

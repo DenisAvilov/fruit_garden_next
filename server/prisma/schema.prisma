@@ -24,6 +24,7 @@ model User {
   social         Social?
   ratings        Rating[]
   comments       Comment[]
+  Basket         Basket?
 
   @@unique([id, email])
 }
@@ -71,14 +72,14 @@ model Product {
   id          Int      @id @default(autoincrement())
   name        String   @unique
   img         String[]
-  description String
+  description String   @db.VarChar(500)
 
   quantity    Int? // Поле кількості товару на налічії
   category    Category     @relation(fields: [categoryId], references: [id])
   subcategory Subcategory? @relation(fields: [subcategoryId], references: [id])
   brand       Brand?       @relation(fields: [brandId], references: [id])
   createdAt   DateTime     @default(now()) @map("date") @db.Date // Поле дати створення продукту
-  ingredients String // Поле переліку інгрідієнтів продукту  
+  ingredients String       @db.VarChar(500) // Поле переліку інгрідієнтів продукту  
 
   smaks           Smaks[] // Поле смак  
   expirationDate  String? // Поле терміну придатності продукту
@@ -137,21 +138,21 @@ model SizeProduct {
 
 model Smaks {
   id      Int       @id @default(autoincrement())
-  name    String
+  name    String    @db.VarChar(30)
   Product Product[]
 }
 
 model Additional {
   id          Int       @id @default(autoincrement())
   name        String?
-  description String?
+  description String?   @db.VarChar(150)
   Product     Product[]
 }
 
 model Category {
   id            Int           @id @default(autoincrement())
   img           String?
-  name          String
+  name          String        @db.VarChar(30)
   products      Product[]
   subcategories Subcategory[] // Замінено поле на subcategories
 }
@@ -184,7 +185,7 @@ model Rating {
 
 model Comment {
   id            Int       @id @default(autoincrement())
-  text          String
+  text          String    @db.VarChar(500)
   productId     Int
   userId        Int
   parentId      Int?
@@ -196,3 +197,84 @@ model Comment {
 
   @@unique([productId, userId])
 }
+
+// BASKET ЗРОБИ npx prisma db push
+model TemporaryUser {
+  id    Int     @id @default(autoincrement())
+  phone String? @unique
+
+  basket Basket?
+}
+
+model Basket {
+  id               Int               @id @default(autoincrement())
+  userId           Int?              @unique
+  user             User?             @relation(fields: [userId], references: [id])
+  phone            TemporaryUser?    @relation(fields: [phoneId], references: [id])
+  phoneId          Int?              @unique
+  additionalInfo   String?
+  productsInBasket ProductInBasket[]
+}
+
+model ProductInBasket {
+  id        Int    @id @default(autoincrement())
+  basketId  Int
+  basket    Basket @relation(fields: [basketId], references: [id])
+  productId Int
+  quantity  Int    @default(1) // Поле для зберігання кількості продуктів у корзині
+
+  attributes ProductAttributeInBasket[]
+}
+
+model Orders {
+  id          Int      @id @default(autoincrement())
+  userId      Int?
+  phone       String?
+  orderDate   DateTime @default(now()) // Дата здійснення замовлення
+  totalAmount Float // Загальна сума замовлення
+
+  // Додаткові дані користувача можуть бути додані сюди, якщо це необхідно
+  orderItems OrderItems[]
+}
+
+model OrderItems {
+  id      Int    @id @default(autoincrement())
+  orderId Int
+  order   Orders @relation(fields: [orderId], references: [id])
+
+  productId  Int
+  quantity   Int // Кількість товарів у замовленні
+  unitPrice  Float // Ціна за одиницю товару у замовленні
+  totalPrice Float // Загальна вартість товару в замовленні (кількість * ціна за одиницю)
+
+  subcategory String?
+  brand       String?
+  smaks       String?
+  weight      Float
+  unic        String
+  size        String?
+}
+
+model ProductAttributeInBasket {
+  id                Int             @id @default(autoincrement())
+  productInBasket   ProductInBasket @relation(fields: [productInBasketId], references: [id])
+  productInBasketId Int
+  name              String
+  img               String          @db.VarChar(255)
+
+  category    String
+  subcategory String?
+  brand       String?
+  smaks       String?
+  weight      Float
+  unic        String
+  price       Float
+  size        String?
+}
+
+// Ваша корзина:
+
+// Булочка з сахарною пудрою - 30 грн
+// Булочка з сахарною пудрою - 30 грн
+// Стакан кави (середній) - 15 грн
+// Загальна вартість замовлення: 45 грн

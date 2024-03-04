@@ -15,16 +15,20 @@ import { SubcategoryService } from './product/subcategory/subcategory.service';
 import { SmakuService } from './product/smaku/smaku.service';
 import { RatingService } from './product/rating/rating.service';
 import { AdditionalService } from './product/additional/additional.service';
+import { BasketService } from './basket/basket.service';
+import { BasketModule } from './basket/basket.module';
+
 
 
 
 @Module({
-  imports: [AuthModule, UsersModule, DbModule, AccountModule, ProductModule],
-  controllers: [AppController, ProductController],
+  imports: [AuthModule, UsersModule, DbModule, AccountModule,
+     ProductModule, BasketModule],
+  controllers: [AppController, ProductController,],
   providers: [
     AppService, DbService, ProductService,
     BrandService, CategoryService, SubcategoryService,
     SmakuService, RatingService,
-    AdditionalService],
+    AdditionalService, BasketService ],
 })
 export class AppModule {}
