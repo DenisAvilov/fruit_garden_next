@@ -1,8 +1,9 @@
 import {  BadRequestException, HttpException, HttpStatus, Injectable, UseGuards } from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
 import {  AttributeDto,    PostProductDto } from './postProductDto';
-import { DeletePriceDto, ProductDto } from './productDto';
+import { DeletePriceDto } from './productDto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { CommentService } from './comment/comment.service';
 
 
 
@@ -10,7 +11,8 @@ import { AuthGuard } from 'src/auth/auth.guard';
 @UseGuards(AuthGuard) 
 export class ProductService {
   constructor(
-  private  db: DbService
+  private  db: DbService,
+  private commentService: CommentService
   ){}
 
 private async createProductAttributes(attribute: AttributeDto) {
@@ -104,10 +106,9 @@ async createProduct(productDto: PostProductDto) {
     }
 }
  
-
-async productId(id: number): Promise<ProductDto>{      
+async productId(id: number) {      
    try{    
-const product = await this.db.product.findFirstOrThrow({
+  const product = await this.db.product.findFirstOrThrow({
           where: {id},
           include: {        
             ProductAttribute: {
@@ -118,14 +119,19 @@ const product = await this.db.product.findFirstOrThrow({
             },       
           },
           smaks: true,
-          additional: true,            
+          additional: true,
+          comments: true            
           },
-        })        
+        }) 
+        if(product){
+
+        }       
        return product
       }
     catch (error) {
        throw new Error(`Error get product by Id:  ${error.message}`); 
-      }}
+ }
+}
 
 async productPatch(body: PostProductDto){    
  try {  
@@ -214,9 +220,7 @@ async deleteProduct(productId: number) {
     throw new Error(`Error deleting product with dependencies: ${error.message}`);
   }
 }
-
-//END ALL PRODUCT 
-
+//END ALL PRODUCT
 async productsAttributeCreatePrice(attribute: AttributeDto){
       try {
       // Знайдемо продукт за його ідентифікатором
@@ -234,7 +238,6 @@ async productsAttributeCreatePrice(attribute: AttributeDto){
       throw new Error(`Error creating product attribute:  ${error.message}`);     
     }
 }
-
 
 async productsAttributePatchPrice(attribute: AttributeDto){
       try {
@@ -291,13 +294,10 @@ async productsWithSmak(smackId: number[]){
   },
     });     
     return { success: true, products: productsWithSmak};
-  }
+}
 
-
-
- async productsAttributePriceDelete(price: DeletePriceDto){
-      try {
-      // Знайдемо продукт за його ідентифікатором
+async productsAttributePriceDelete(price: DeletePriceDto){
+      try {      
       const product = await this.db.product.findUnique({
         where: {
           id: price.productId,

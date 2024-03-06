@@ -17,6 +17,7 @@ import { RatingService } from './product/rating/rating.service';
 import { AdditionalService } from './product/additional/additional.service';
 import { BasketService } from './basket/basket.service';
 import { BasketModule } from './basket/basket.module';
+import { CommentService } from './product/comment/comment.service';
 
 
 
@@ -29,6 +30,6 @@ import { BasketModule } from './basket/basket.module';
     AppService, DbService, ProductService,
     BrandService, CategoryService, SubcategoryService,
     SmakuService, RatingService,
-    AdditionalService, BasketService ],
+    AdditionalService, BasketService, CommentService ],
 })
 export class AppModule {}

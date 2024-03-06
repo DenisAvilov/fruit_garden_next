@@ -1,21 +1,75 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { IsArray, IsNumber, IsOptional, IsString, MaxLength } from "class-validator";
 
 export class CommentDto {
-  @ApiProperty()
+  @ApiProperty({description: "Індифікатор коментаря"})
+  @IsNumber()
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({description: "Текст повідомленя"})
+  @IsString()
   text: string;
 
-  @ApiProperty()
+  @ApiProperty({description: "Індифікатор продукту"})
+  @IsNumber()
   productId: number;
 
-  @ApiProperty()
+  @ApiProperty({description: "Індифікатор користувача"})
+  @IsNumber()
   userId: number;
 
-  @ApiProperty()
+  @ApiProperty({description: "Індифікатор батьківського коментаря"})
+  @IsNumber()
   parentId: number;
+
+  @ApiProperty({ type: [CommentDto], description: "Масив батьківського коментаря" }) 
+  @IsArray()
+  replies: CommentDto[];
  
-  @ApiProperty()
+  @ApiProperty({description: "Дата створення коментаря"})
+  @IsString()
   createdAt: string;
+}
+
+export class PostCommentDto{
+  
+  @ApiProperty({ example:"Дякую за вашу працю!!!",description: "Текст повідомленя"})
+  @MaxLength(500)
+  @IsString()
+  text: string;
+
+  @ApiProperty({example: 1, description: "Індифікатор продукту"})
+  @IsNumber()
+  productId: number;
+
+   
+  @ApiProperty({ example: "2024-02-17T12:30:45Z", description: "Дата створення коментаря"})
+  @IsString()
+  createdAt: string;
+
+}
+
+export class  PatchCommentDto extends PostCommentDto {
+  @ApiProperty({example: 1, description: "Індифікатор коментаря"})
+  @IsNumber()
+  id: number; 
+}
+
+export class PostSubCommentDto extends PostCommentDto {
+ @ApiProperty({description: "Індифікатор батьківського коментаря"})
+ @IsNumber()
+ @IsOptional()
+ parentId: number;  
+}
+
+export class PatchSubCommentDto extends PostCommentDto {
+ @ApiProperty({description: "Індифікатор батьківського коментаря"})
+ @IsNumber()
+ @IsOptional()
+ parentId: number;
+
+ @ApiProperty({ type: [CommentDto], description: "Масив батьківського коментаря" }) 
+ @IsArray()
+ @IsOptional()
+ replies: CommentDto[];
 }
