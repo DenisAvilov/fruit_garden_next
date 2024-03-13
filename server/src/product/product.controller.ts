@@ -1,5 +1,5 @@
 import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards,  } from '@nestjs/common';
-import { DeletePriceDto, ProductDto } from './productDto';
+import { DeletePriceDto,  ProductDto } from './productDto';
 import { ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AttributeDto, PatchAttributeDto, PostProductDto} from './postProductDto';
 import { ProductService } from './product.service';
@@ -15,8 +15,8 @@ import { SmaksDto } from './smaku/smakuDto';
 import { PostSmaksDto } from './smaku/postSmakuDto';
 import { SmakuService } from './smaku/smaku.service';
 import { RatingService } from './rating/rating.service';
-import { RatingDto } from './rating/rating.Dto';
-import { PostRatingDto } from './rating/postRating.Dto';
+
+
 import { PatchSmakDto } from './smaku/patchSmakDto';
 import { LimitPages } from 'src/helpers/helpers';
 import { DbService } from 'src/db/db.service';
@@ -27,6 +27,8 @@ import { CommentDto, PatchCommentDto, PostCommentDto, PostSubCommentDto } from '
 import { SessionInfo } from 'src/auth/session-info.decorator';
 import { CommentService } from './comment/comment.service';
 import { GetSessionInfoDto } from 'src/auth/dto';
+import { PostAndUpdateRatingDto, RatingDto } from './rating/ratingDto';
+
 
 
 
@@ -78,17 +80,18 @@ export class ProductController {
   return await this.smakService.getSmaks()
  }
 // Product Start
-@Get('/:id')
-@Public()
-@ApiOkResponse({ type: ProductDto, description: 'Отримуємо продукт по ID.' })
-@ApiParam({ name: 'id', description: 'Отримати один продукт по его ID', example: 1 })
-async productId(@Param('id', ParseIntPipe) id: number ) {  
-    try {      
-       return await this.productService.productId(id) 
-          } catch (error) {
-      throw new BadRequestException(error.message ||'Помилка при отриманні продукту по ID')  
-    }
-}
+// @Get('/:id')
+// @Public()
+// @ApiOkResponse({ type: ProductDto, description: 'Отримуємо продукт по ID.' })
+// @ApiParam({ name: 'id', description: 'Отримати один продукт по его ID', example: 1 })
+// async productId(@Param('id', ParseIntPipe) id: number )  {  
+//     try {      
+//         return  await this.productService.productId(id)       
+        
+//           } catch (error) {
+//       throw new BadRequestException(error.message ||'Помилка при отриманні продукту по ID')  
+//     }
+// }
 
 @Get('/:limit/:page')
 @Public()
@@ -117,13 +120,17 @@ async getAllProduct(
           SizeProduct: true
         }
       },
-      additional: true
+      additional: true,
+      rating: true,
     },
     orderBy: {
       id: 'asc'
     }
   });
-
+  if(!products){
+    throw new BadRequestException({message: 'Нема продукту'})
+  }
+ 
   return products;
 }
 
@@ -292,11 +299,20 @@ async smackUpdate(@Body() body: PatchSmakDto):Promise<SmaksDto>{
 }
 // Smaks End
 // Rating START
-@Post('create-rating')
+@Patch('create-rating')
 @Public()
 @ApiCreatedResponse({ type: RatingDto })
-async ratingCreate(@Body() body: PostRatingDto):Promise<RatingDto>{
-  return  await this.ratingService.createRating(body.value, body.productId, body.userId)
+async ratingCreate(
+  @Body() body: PostAndUpdateRatingDto,
+  @SessionInfo() session: GetSessionInfoDto
+) {
+  const rating =  await this.ratingService.addOrUpdateRating(
+    body.productId, 
+    body.value,
+   session.userId)
+  // const calculateRating = await this.ratingService.processRating(body.productId)
+  // console.log('calculateRating', calculateRating)
+  return {rating }
  }
  
 @Post('create-comment')

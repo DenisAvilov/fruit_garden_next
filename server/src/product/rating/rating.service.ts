@@ -1,50 +1,83 @@
 import { Injectable } from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
-import { RatingDto } from './rating.Dto';
+import { RatingDto, TotalRatingDto } from './ratingDto';
+
+
 
 @Injectable()
 export class RatingService {
 
     constructor(private db: DbService) {}
+async addOrUpdateRating(
+   productId: number, 
+   value: number,
+   userId?: number): Promise<RatingDto> {
 
-  async createRating(value: number, productId: number, userId: number): Promise<RatingDto> {
-    const newRating = await this.db.rating.create({
+   // Пошук існуючого рейтингу за productId та userId
+  const existingRating = await this.db.rating.findFirst({
+    where: { productId, userId }
+  });
+    console.log('existingRating', existingRating)
+  // Оновлення чи створення нового рейтингу
+  if (existingRating) {    
+    const updatedGoodVotes = (value >= 4) ? existingRating.goodVotes + 1 : existingRating.goodVotes;
+
+    const updatedRating = await this.db.rating.update({
+      where: { id: existingRating.id },
+      data: {
+        value,        
+        goodVotes: updatedGoodVotes
+      }
+    });
+
+    return { ...updatedRating };
+  } else {
+    const rating = await this.db.rating.create({
       data: {
         value,
         productId,
         userId,
-      },
-    });
-    return newRating;
+        totalVotes: 1,       
+        goodVotes: (value >= 4) ? 1 : 0,
+
+      }
+    })
+    return rating
+  }
+}
+
+async processRating(productId: number)  {
+  const productRatings = await this.db.rating.findMany({
+    where: { productId }
+  });
+
+  if (productRatings.length === 0) {
+    return null; // Повернути null, якщо немає жодного рейтингу для продукту
   }
 
-  async getRatingById(id: number): Promise<RatingDto | null> {
-    const rating = await this.db.rating.findUnique({
-      where: {
-        id,
-      },
-    });
-    return rating;
-  }
+  const goodVotes = productRatings.filter(rating => rating.value >= 4).length;
+  const totalVotes = productRatings.length;
+  const totalRating = productRatings.reduce((acc, rating) => acc + rating.value, 0);
 
-  async updateRating(id: number, newValue: number): Promise<RatingDto | null> {
-    const updatedRating = await this.db.rating.update({
-      where: {
-        id,
-      },
-      data: {
-        value: newValue,
-      },
-    });
-    return updatedRating;
-  }
+  const processedRating: TotalRatingDto = {
+    productId,
+    goodVotes,
+    totalVotes,
+    totalRating,
+    ratings: productRatings.map(rating => {
+      return {
+        id: rating.id,
+        value: rating.value,
+        productId: rating.productId,
+        goodVotes: rating.goodVotes,
+        totalVotes: rating.totalVotes,
+        userId: rating.userId
 
-  async deleteRating(id: number): Promise<RatingDto | null> {
-    const deletedRating = await this.db.rating.delete({
-      where: {
-        id,
-      },
-    });
-    return deletedRating;
-  }
+      };
+    })
+  };
+
+  return processedRating;
+}
+ 
 }

@@ -22,7 +22,6 @@ model User {
   account        Account?
   contact        Contact?
   social         Social?
-  ratings        Rating[]
   comments       Comment[]
   Basket         Basket?
 
@@ -173,14 +172,13 @@ model Brand {
 }
 
 model Rating {
-  id        Int      @id @default(autoincrement())
-  value     Float    @default(0)
-  productId Int
-  userId    Int
-  product   Product? @relation(fields: [productId], references: [id])
-  user      User?    @relation(fields: [userId], references: [id])
-
-  @@unique([productId, userId])
+  id         Int      @id @default(autoincrement())
+  value      Float    @default(0)
+  productId  Int
+  product    Product? @relation(fields: [productId], references: [id])
+  goodVotes  Int      @default(0)
+  totalVotes Int      @default(0)
+  userId     Int?
 }
 
 model Comment {

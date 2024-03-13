@@ -1,9 +1,10 @@
 import {  BadRequestException, HttpException, HttpStatus, Injectable, UseGuards } from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
 import {  AttributeDto,    PostProductDto } from './postProductDto';
-import { DeletePriceDto } from './productDto';
+import { DeletePriceDto, } from './productDto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CommentService } from './comment/comment.service';
+import { RatingService } from './rating/rating.service';
 
 
 
@@ -12,6 +13,7 @@ import { CommentService } from './comment/comment.service';
 export class ProductService {
   constructor(
   private  db: DbService,
+  private ratingService: RatingService,
   private commentService: CommentService
   ){}
 
@@ -105,8 +107,10 @@ async createProduct(productDto: PostProductDto) {
       throw new HttpException(`Помилка при створенні продукту ${error.message} ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
- 
-async productId(id: number) {      
+
+
+
+async productId(id: number)  {      
    try{    
   const product = await this.db.product.findFirstOrThrow({
           where: {id},
@@ -120,13 +124,11 @@ async productId(id: number) {
           },
           smaks: true,
           additional: true,
-          comments: true            
+          comments: true,
+          rating: true,                               
           },
         }) 
-        if(product){
-
-        }       
-       return product
+  return product
       }
     catch (error) {
        throw new Error(`Error get product by Id:  ${error.message}`); 

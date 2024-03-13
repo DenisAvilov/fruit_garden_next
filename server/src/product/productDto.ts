@@ -1,6 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { IsArray, IsNotEmpty, IsNumber,  IsOptional, IsString } from "class-validator";
 import { PriceDto, ProductAttributeDto, SizeProductDto, WeightDto } from "./productAttributeDto";
+import { CommentDto } from "./comment/commentDto";
+// import {   TotalRatingDto } from "./rating/ratingDto";
 
 class Additional {  
   @ApiProperty({description: 'Назва додаткового поля'})  
@@ -54,12 +56,6 @@ export class ProductDto {
   @IsString()
   shippingInfo?: string | null
    
-  // @ApiProperty({description: 'Перелік смаків продукту.'})
-  // @IsArray()
-  // @IsString()
-  // smaks: string[] | { id: number; name: string }[]
-  // smaks: string[] 
-
   @ApiProperty({description: 'Статус доставки продукту.'})
   @IsOptional()
   @IsString()
@@ -84,24 +80,28 @@ export class ProductDto {
   @IsString()
   ingredients: string
 
-  @ApiProperty({description: 'Коментарі користувачів щодо продукту.'})
+  @ApiProperty({type: CommentDto, description: 'Коментарі користувачів щодо продукту.'})
   @IsOptional()
-  @IsArray()
-  @IsString()
-  comments?: string[];
+  @IsArray()  
+  comments?: CommentDto[];
 
-  @ApiProperty({description: 'Коментарі користувачів щодо продукту.'})
-  @IsOptional()
-  @IsNumber()
-  rating?: number;
+  // @ApiProperty({type: RatingDto, description: 'Рейтинг продукту.'})
+  // rating: RatingDto[]  
 
-  @ApiProperty({description: 'Перелік індентифікаторів смаків продукту.'})  
-  @IsArray()
-  @IsNumber()
-  smaksId: number[];
+  @ApiProperty({  description: 'Рейтинг продукту.'})
+  rating: number  
+
+  // @ApiProperty({type: TotalRatingDto}) 
+  // totalVotes: TotalRatingDto
+  // totalVotes: any
+
+  // @ApiProperty({description: 'Перелік індентифікаторів смаків продукту.'})  
+  // @IsArray()
+  // @IsNumber()
+  // smaksId: number[];
 
   @ApiProperty({
-    description: 'Опис парамертів ціни, ваги та пакування .',
+    description: 'Опис парамертів ціни, ваги та пакування.',
     type: [ProductAttributeDto]
     })  
   ProductAttribute: ({
@@ -112,9 +112,15 @@ export class ProductDto {
 
 
   @ApiProperty({example: [{name: null, description: null}] })   
-  additional?: Additional[]; 
+  additional?: Additional[];   
 
+ 
 }
+
+//Видалити як що що НАГАДАЛКА
+// export class ProductWithTotalVotesDto extends ProductDto  {
+//   totalVotes: TotalRatingDto;
+// }
 
 
 export class DeletePriceDto{
@@ -124,6 +130,7 @@ export class DeletePriceDto{
   @ApiProperty({ description: 'Array of IDs', example: [2,3] })
   id: string[];
 }
+
 
 
 
