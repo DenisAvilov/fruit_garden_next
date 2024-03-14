@@ -2,24 +2,19 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsArray, IsInt, IsNumber, IsOptional } from "class-validator";
 
 
-export class RatingDto {
- 
+export class RatingDto { 
   @ApiProperty({description: "Індентифікатор продукта"})
   @IsInt()
   productId: number
 
-  @ApiProperty({description: "Лайк"})
-  @IsNumber()
-  goodVotes: number
-
-  @ApiProperty({description: "Загальна кількість проголосовавших"}) 
-  @IsNumber()
-  totalVotes: number
-  
+  @ApiProperty({description: "Передана оцінка користувача за продукт."})
+  @IsInt()
+  value: number
+   
   @ApiProperty({description: "Середне значення. Рейтинг"}) 
   @IsOptional()
   @IsNumber()
-  userId?:  number | null
+  userId?:  number | null 
 }  
 
 
@@ -32,11 +27,6 @@ export class PostAndUpdateRatingDto {
   @ApiProperty({example: 1, description: "Індентифікатор продкта"}) 
   @IsInt()
   productId: number 
-
-  // @ApiProperty({ description: "Лайк" })
-  // @IsPositive()
-  // goodVotes: number
-
 }
 
 export class TotalRatingDto {

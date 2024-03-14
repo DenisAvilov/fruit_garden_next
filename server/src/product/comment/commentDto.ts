@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsDate, IsNumber, IsOptional, IsString, MaxLength } from "class-validator";
+import { IsArray,   IsDate,   IsNumber, IsOptional, IsString, MaxLength } from "class-validator";
 
 export class CommentDto {
   @ApiProperty({description: "Індифікатор коментаря"})
@@ -24,9 +24,10 @@ export class CommentDto {
 
   @ApiProperty({ type: CommentDto, description: "Масив батьківського коментаря" }) 
   @IsArray()
+  @IsOptional()
   replies?: CommentDto[];
  
-  @ApiProperty({description: "Дата створення коментаря"})
+  @ApiProperty({description: "Дата створення коментаря"})  
   @IsDate()
   createdAt: Date;
 }
@@ -43,9 +44,10 @@ export class PostCommentDto{
   productId: number;
 
    
-  @ApiProperty({ example: Date, description: "Дата створення коментаря"})
-  @IsDate()
-  createdAt: Date;
+  @ApiProperty({   description: "Дата створення коментаря"})
+  @IsString()
+  // @IsDate()
+  createdAt: string;
 
 }
 

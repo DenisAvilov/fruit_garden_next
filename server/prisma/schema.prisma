@@ -89,9 +89,14 @@ model Product {
   categoryId    Int
   subcategoryId Int?
   brandId       Int?
-  rating        Rating[]
-  comments      Comment[]
-  smaksId       Int[]
+
+  goodVotes   Int      @default(0)
+  totalVotes  Int      @default(0)
+  totalRating Float    @default(0)
+  ratings     Rating[]
+
+  comments Comment[]
+  smaksId  Int[]
 
   ProductAttribute ProductAttribute[]
 
@@ -121,7 +126,7 @@ model Price {
   price Float[]
 
   startDate DateTime? @default(now())
-  endDate   DateTime? // Дата закінчення дії ціни
+  endDate   DateTime?
 
   priceId          Int
   ProductAttribute ProductAttribute @relation(fields: [priceId], references: [id], onDelete: Cascade)
@@ -172,13 +177,11 @@ model Brand {
 }
 
 model Rating {
-  id         Int      @id @default(autoincrement())
-  value      Float    @default(0)
-  productId  Int
-  product    Product? @relation(fields: [productId], references: [id])
-  goodVotes  Int      @default(0)
-  totalVotes Int      @default(0)
-  userId     Int?
+  id        Int      @id @default(autoincrement())
+  value     Float    @default(0)
+  productId Int
+  product   Product? @relation(fields: [productId], references: [id])
+  userId    Int?
 }
 
 model Comment {
@@ -194,7 +197,6 @@ model Comment {
   createdAt     DateTime  @default(now())
 }
 
-// BASKET ЗРОБИ npx prisma db push
 model TemporaryUser {
   id    Int     @id @default(autoincrement())
   phone String? @unique

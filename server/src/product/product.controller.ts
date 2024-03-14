@@ -11,7 +11,7 @@ import { CreateCategoryDto, PostCategoryDto } from './category/postCategoryDto';
 import { SubcategoryDto } from './subcategory/subcategoryDto';
 import { PostSubcategoryDto } from './subcategory/postSubcategoryDto';
 import { SubcategoryService } from './subcategory/subcategory.service';
-import { SmaksDto } from './smaku/smakuDto';
+import {  ProductForSmakDto, SmaksDto } from './smaku/smakuDto';
 import { PostSmaksDto } from './smaku/postSmakuDto';
 import { SmakuService } from './smaku/smaku.service';
 import { RatingService } from './rating/rating.service';
@@ -28,9 +28,6 @@ import { SessionInfo } from 'src/auth/session-info.decorator';
 import { CommentService } from './comment/comment.service';
 import { GetSessionInfoDto } from 'src/auth/dto';
 import { PostAndUpdateRatingDto, RatingDto } from './rating/ratingDto';
-
-
-
 
 export class SmaksResponseDto {
   smaks: string;
@@ -73,6 +70,23 @@ export class ProductController {
  return await  this.subcategoryService.getSubcategory()  
  }
 
+ @Get('smak/:id')
+@Public()
+@ApiOkResponse({ type: ProductDto })
+@ApiParam({ 
+ name: 'id',
+ description: 'Отримуємо продукт або продукти за номером смаку.',
+ example: '1,2'
+ })
+async productsWithSmak(@Param('id') id: string ) {    
+    try {       
+      const arr = id.split(',').map(Number)     
+      return  await this.productService.productsWithSmak(arr);      
+    } catch (error) {
+      throw new BadRequestException({code: 400, message : 'Помилка при отримані продукту за номерам смаку'  })     
+    }
+  }
+
 @Get('smaks')
 @Public()
 @ApiOkResponse({type: SmaksDto, description: 'Отримуємо всі смаки'})  
@@ -80,18 +94,17 @@ export class ProductController {
   return await this.smakService.getSmaks()
  }
 // Product Start
-// @Get('/:id')
-// @Public()
-// @ApiOkResponse({ type: ProductDto, description: 'Отримуємо продукт по ID.' })
-// @ApiParam({ name: 'id', description: 'Отримати один продукт по его ID', example: 1 })
-// async productId(@Param('id', ParseIntPipe) id: number )  {  
-//     try {      
-//         return  await this.productService.productId(id)       
-        
-//           } catch (error) {
-//       throw new BadRequestException(error.message ||'Помилка при отриманні продукту по ID')  
-//     }
-// }
+@Get('/:id')
+@Public()
+@ApiOkResponse({ type: ProductDto, description: 'Отримуємо продукт по ID.' })
+@ApiParam({ name: 'id', description: 'Отримати один продукт по его ID', example: 1 })
+async productId(@Param('id', ParseIntPipe) id: number ):Promise<ProductDto>  {  
+    try {      
+         return await this.productService.productId(id)         
+          } catch (error) {
+      throw new BadRequestException(error.message ||'Помилка при отриманні продукту по ID')  
+    }
+}
 
 @Get('/:limit/:page')
 @Public()
@@ -120,8 +133,7 @@ async getAllProduct(
           SizeProduct: true
         }
       },
-      additional: true,
-      rating: true,
+      additional: true,     
     },
     orderBy: {
       id: 'asc'
@@ -133,6 +145,10 @@ async getAllProduct(
  
   return products;
 }
+
+
+
+
 
 @Post('create')
 @Roles('ADMIN')
@@ -187,8 +203,8 @@ async productDelete(@Param('id', ParseIntPipe) id: number) {
 
 @Patch('patch-price')
 @Roles('ADMIN')
-@ApiOkResponse({ type:  AttributeDto , description: 'Оновлення опису ваги.'})
-async pricePatch(@Body() body: PatchAttributeDto){
+@ApiOkResponse({ type:  ProductForSmakDto , description: 'Оновлення опису ваги.'})
+async pricePatch(@Body() body: PatchAttributeDto):Promise<{id: number, productId: number}>{
   return  await this.productService.productsAttributePatchPrice(body)
  } 
 
@@ -273,23 +289,6 @@ async categoryCreate(@Body() body: CreateCategoryDto, ){
   return  await this.smakService.createSmak(body.name)
  }
 
-@Get('smak/:id')
-@Public()
-@ApiOkResponse({ type: ProductDto })
-@ApiParam({ 
- name: 'id',
- description: 'Отримуємо продукт або продукти за номером смаку.',
- example: '1,2'
- })
-async productsWithSmak(@Param('id') id: string ) {  
-    try {
-      const arr = id.split(',').map(Number)     
-      const product = await this.productService.productsWithSmak(arr);
-      return { success: true, data: product };
-    } catch (error) {
-      return { success: false, error: error.message || '<WWWWW Помилка при отримані продукту за номерам смаку' };
-    }
-  }
 
 @Patch('patch-smak')
 @Roles('ADMIN')

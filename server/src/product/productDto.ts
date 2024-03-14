@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger"
 import { IsArray, IsNotEmpty, IsNumber,  IsOptional, IsString } from "class-validator";
 import { PriceDto, ProductAttributeDto, SizeProductDto, WeightDto } from "./productAttributeDto";
 import { CommentDto } from "./comment/commentDto";
-// import {   TotalRatingDto } from "./rating/ratingDto";
+// import {     TotalRatingDto,  } from "./rating/ratingDto";
 
 class Additional {  
   @ApiProperty({description: 'Назва додаткового поля'})  
@@ -85,21 +85,6 @@ export class ProductDto {
   @IsArray()  
   comments?: CommentDto[];
 
-  // @ApiProperty({type: RatingDto, description: 'Рейтинг продукту.'})
-  // rating: RatingDto[]  
-
-  @ApiProperty({  description: 'Рейтинг продукту.'})
-  rating: number  
-
-  // @ApiProperty({type: TotalRatingDto}) 
-  // totalVotes: TotalRatingDto
-  // totalVotes: any
-
-  // @ApiProperty({description: 'Перелік індентифікаторів смаків продукту.'})  
-  // @IsArray()
-  // @IsNumber()
-  // smaksId: number[];
-
   @ApiProperty({
     description: 'Опис парамертів ціни, ваги та пакування.',
     type: [ProductAttributeDto]
@@ -114,14 +99,22 @@ export class ProductDto {
   @ApiProperty({example: [{name: null, description: null}] })   
   additional?: Additional[];   
 
+  @ApiProperty({description: 'Кількість всіх хто поставив бал више 4 за продукт.'})
+  @IsOptional()
+  @IsNumber()
+  goodVotes: number
+
+  @ApiProperty({description: 'Загальна кількість проголосувавших.'})
+  @IsOptional()
+  @IsNumber()
+  totalVotes: number
+
+  @ApiProperty({description: 'Середній бал рейтингу продукта.'})
+  @IsOptional()
+  @IsNumber()
+  totalRating: number
  
 }
-
-//Видалити як що що НАГАДАЛКА
-// export class ProductWithTotalVotesDto extends ProductDto  {
-//   totalVotes: TotalRatingDto;
-// }
-
 
 export class DeletePriceDto{
   @ApiProperty({ description: 'Product ID', example: 1 })
