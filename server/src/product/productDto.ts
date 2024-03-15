@@ -1,6 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { IsArray, IsNotEmpty, IsNumber,  IsOptional, IsString } from "class-validator";
 import { PriceDto, ProductAttributeDto, SizeProductDto, WeightDto } from "./productAttributeDto";
+import { CommentDto } from "./comment/commentDto";
+// import {     TotalRatingDto,  } from "./rating/ratingDto";
 
 class Additional {  
   @ApiProperty({description: 'Назва додаткового поля'})  
@@ -54,12 +56,6 @@ export class ProductDto {
   @IsString()
   shippingInfo?: string | null
    
-  // @ApiProperty({description: 'Перелік смаків продукту.'})
-  // @IsArray()
-  // @IsString()
-  // smaks: string[] | { id: number; name: string }[]
-  // smaks: string[] 
-
   @ApiProperty({description: 'Статус доставки продукту.'})
   @IsOptional()
   @IsString()
@@ -84,24 +80,13 @@ export class ProductDto {
   @IsString()
   ingredients: string
 
-  @ApiProperty({description: 'Коментарі користувачів щодо продукту.'})
+  @ApiProperty({type: CommentDto, description: 'Коментарі користувачів щодо продукту.'})
   @IsOptional()
-  @IsArray()
-  @IsString()
-  comments?: string[];
-
-  @ApiProperty({description: 'Коментарі користувачів щодо продукту.'})
-  @IsOptional()
-  @IsNumber()
-  rating?: number;
-
-  @ApiProperty({description: 'Перелік індентифікаторів смаків продукту.'})  
-  @IsArray()
-  @IsNumber()
-  smaksId: number[];
+  @IsArray()  
+  comments?: CommentDto[];
 
   @ApiProperty({
-    description: 'Опис парамертів ціни, ваги та пакування .',
+    description: 'Опис парамертів ціни, ваги та пакування.',
     type: [ProductAttributeDto]
     })  
   ProductAttribute: ({
@@ -112,10 +97,24 @@ export class ProductDto {
 
 
   @ApiProperty({example: [{name: null, description: null}] })   
-  additional?: Additional[]; 
+  additional?: Additional[];   
 
+  @ApiProperty({description: 'Кількість всіх хто поставив бал више 4 за продукт.'})
+  @IsOptional()
+  @IsNumber()
+  goodVotes: number
+
+  @ApiProperty({description: 'Загальна кількість проголосувавших.'})
+  @IsOptional()
+  @IsNumber()
+  totalVotes: number
+
+  @ApiProperty({description: 'Середній бал рейтингу продукта.'})
+  @IsOptional()
+  @IsNumber()
+  totalRating: number
+ 
 }
-
 
 export class DeletePriceDto{
   @ApiProperty({ description: 'Product ID', example: 1 })
@@ -124,6 +123,7 @@ export class DeletePriceDto{
   @ApiProperty({ description: 'Array of IDs', example: [2,3] })
   id: string[];
 }
+
 
 
 

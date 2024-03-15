@@ -1,9 +1,12 @@
 import {  BadRequestException, HttpException, HttpStatus, Injectable, UseGuards } from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
 import {  AttributeDto,    PostProductDto } from './postProductDto';
-import { DeletePriceDto } from './productDto';
+import { DeletePriceDto, ProductDto, } from './productDto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CommentService } from './comment/comment.service';
+import { RatingService } from './rating/rating.service';
+// import { ProductForSmakDto } from './smaku/smakuDto';
+
 
 
 
@@ -12,6 +15,7 @@ import { CommentService } from './comment/comment.service';
 export class ProductService {
   constructor(
   private  db: DbService,
+  private ratingService: RatingService,
   private commentService: CommentService
   ){}
 
@@ -30,14 +34,14 @@ private async createProductAttributes(attribute: AttributeDto) {
     return createdProductAttribute;
 }
 
-async createProduct(productDto: PostProductDto) { 
+async createProduct(productDto: PostProductDto):Promise<ProductDto> { 
     try {
        const existingCategory = await this.db.category.findUnique({
        where: { id: productDto.categoryId },
       });
 
-      if (!existingCategory) {      
-       return { success: false, message: 'Категорія не знайдена. Спочатку створіть категорію.' };
+      if (!existingCategory) {     
+          throw new BadRequestException({code: 400, message: 'Категорія не знайдена. Спочатку створіть категорію.'});       
     }       
       const productData: any = {
       name: productDto.name,
@@ -105,8 +109,8 @@ async createProduct(productDto: PostProductDto) {
       throw new HttpException(`Помилка при створенні продукту ${error.message} ${error}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
- 
-async productId(id: number) {      
+
+async productId(id: number):Promise<ProductDto>  {      
    try{    
   const product = await this.db.product.findFirstOrThrow({
           where: {id},
@@ -117,16 +121,12 @@ async productId(id: number) {
               Price: true,
               SizeProduct: true,          
             },       
-          },
-          smaks: true,
+          },          
           additional: true,
-          comments: true            
+          comments: true,                                         
           },
         }) 
-        if(product){
-
-        }       
-       return product
+  return product
       }
     catch (error) {
        throw new Error(`Error get product by Id:  ${error.message}`); 
@@ -239,9 +239,8 @@ async productsAttributeCreatePrice(attribute: AttributeDto){
     }
 }
 
-async productsAttributePatchPrice(attribute: AttributeDto){
-      try {
-      // Знайдемо продукт за його ідентифікатором
+async productsAttributePatchPrice(attribute: AttributeDto):Promise<{id: number, productId: number}>{
+      try {     
       const product = await this.db.product.findUnique({
         where: {
           id: attribute.productId,
@@ -257,7 +256,7 @@ async productsAttributePatchPrice(attribute: AttributeDto){
           productId: attribute.productId,
         },
          include: {
-         Weight: true, // замініть на Weight, оскільки це поле вкладене в ProductAttribute
+         Weight: true,
       },
       });
 
@@ -285,15 +284,15 @@ async productsAttributePatchPrice(attribute: AttributeDto){
     }
 }
 
-async productsWithSmak(smackId: number[]){    
-    const productsWithSmak = await this.db.product.findMany({
+async productsWithSmak(smackId: number[]) {  
+ const productsWithSmak = await this.db.product.findMany({
      where: {
      smaksId: {
       hasSome: smackId,
     },
   },
     });     
-    return { success: true, products: productsWithSmak};
+    return  productsWithSmak;
 }
 
 async productsAttributePriceDelete(price: DeletePriceDto){

@@ -1,50 +1,72 @@
-import { Injectable } from '@nestjs/common';
-import { DbService } from 'src/db/db.service';
-import { RatingDto } from './rating.Dto';
+import { Injectable } from '@nestjs/common'
+import { DbService } from 'src/db/db.service'
+import { RatingDto} from './ratingDto'
+
+
 
 @Injectable()
 export class RatingService {
 
     constructor(private db: DbService) {}
+async addOrUpdateRating(productId: number, value: number, userId?: number): Promise<RatingDto> {
+  let existingRating
 
-  async createRating(value: number, productId: number, userId: number): Promise<RatingDto> {
-    const newRating = await this.db.rating.create({
-      data: {
-        value,
-        productId,
-        userId,
-      },
-    });
-    return newRating;
+  if (userId) {
+    existingRating = await this.db.rating.findFirst({
+      where: { productId, userId }
+    })
   }
 
-  async getRatingById(id: number): Promise<RatingDto | null> {
-    const rating = await this.db.rating.findUnique({
-      where: {
-        id,
-      },
-    });
-    return rating;
-  }
-
-  async updateRating(id: number, newValue: number): Promise<RatingDto | null> {
+  if (existingRating) {    
     const updatedRating = await this.db.rating.update({
-      where: {
-        id,
-      },
-      data: {
-        value: newValue,
-      },
-    });
-    return updatedRating;
-  }
+      where: { id: existingRating.id },
+      data: { value }
+    })
 
-  async deleteRating(id: number): Promise<RatingDto | null> {
-    const deletedRating = await this.db.rating.delete({
-      where: {
-        id,
-      },
-    });
-    return deletedRating;
+    const productRatings = await this.db.rating.findMany({
+      where: { productId }
+    })
+   
+    const totalRating = productRatings.reduce((acc, rating) => acc + rating.value, 0)
+    const totalVotes = productRatings.length
+    const averageRating = +(totalRating / totalVotes).toFixed(1)
+    const goodVotes = productRatings.filter(rating => rating.value >= 4).length
+
+    await this.db.product.update({
+      where: { id: productId },
+      data: {
+        goodVotes,
+        totalVotes,
+        totalRating: averageRating
+      }
+    })
+
+    return { ...updatedRating }
+  } else {
+    // Додати новий рейтинг
+    const rating = await this.db.rating.create({
+      data: { value, productId, userId }
+    })
+
+    // Отримати всі оцінки для цього продукту
+    const productRatings = await this.db.rating.findMany({
+      where: { productId }
+    })
+   
+    const totalRating = productRatings.reduce((acc, rating) => acc + rating.value, 0)
+    const totalVotes = productRatings.length
+    const averageRating = +(totalRating / totalVotes).toFixed(1)    
+    const goodVotes = productRatings.filter(rating => rating.value >= 4).length
+
+    await this.db.product.update({
+      where: { id: productId },
+      data: {
+        goodVotes,
+        totalVotes,
+        totalRating: averageRating
+      }
+    })
+
+    return rating
   }
-}
+}}
