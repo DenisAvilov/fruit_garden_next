@@ -157,6 +157,7 @@ model Category {
   id            Int           @id @default(autoincrement())
   img           String?
   name          String        @db.VarChar(30)
+  icons         String?       @db.VarChar(80)
   products      Product[]
   subcategories Subcategory[] // Замінено поле на subcategories
 }

@@ -8,8 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
+    "start": "nest start",    
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -17,7 +16,10 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",     
+    "start:dev": "nest start --watch",
+    "dev": "concurrently \"npm run start:dev\" \"npm run client\"",
+    "client": "cd ../client && npm run dev"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -29,6 +31,7 @@
     "@types/cookie-parser": "^1.4.6",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "concurrently": "^8.2.2",
     "cookie-parser": "^1.4.6",
     "mobizon-node": "^0.5.5",
     "nodemailer": "^6.9.7",

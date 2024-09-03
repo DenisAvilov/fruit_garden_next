@@ -18,7 +18,8 @@ export class CategoryService {
     {
      data: {
         img: body.img,
-        name: body.name,       
+        name: body.name, 
+        icons: body.icons      
       }  
     })
   return category
@@ -34,7 +35,8 @@ export class CategoryService {
       where: {id: parseInt(body.id)},
      data: {
         img: body.img,
-        name: body.name,       
+        name: body.name,  
+        icons: body.icons      
       }  
     })
   return category

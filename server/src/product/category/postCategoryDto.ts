@@ -11,7 +11,8 @@ export class PostCategoryDto {
   @ApiProperty({example: 'Зефір'})
   name: string;
   
- 
+  @ApiProperty({example: 'icons category'})
+  icons: string
 }
 export class CreateCategoryDto {
 
@@ -20,6 +21,8 @@ export class CreateCategoryDto {
 
   @ApiProperty({example: 'Зефір'})
   name: string;
-  
+
+  @ApiProperty({example: 'icons category'})
+  icons: string
  
 }

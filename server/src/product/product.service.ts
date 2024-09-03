@@ -53,9 +53,7 @@ async createProduct(productDto: PostProductDto):Promise<ProductDto> {
     }   
     if (productDto.additional && productDto.additional.length > 0) {
       const additionalData = productDto.additional.map((a) => ({ name: a?.name || null, description: a?.description || null }));
-      productData.additional = { create: additionalData };
-
-      
+      productData.additional = { create: additionalData };      
     }
     if (productDto.subcategoryId) {
       productData.subcategory = { connect: { id: productDto.subcategoryId } };

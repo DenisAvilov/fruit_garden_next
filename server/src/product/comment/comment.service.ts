@@ -17,7 +17,7 @@ export class CommentService {
     if (!comment) {
       throw new BadRequestException({ type: `Нема коментаря за індефікатором ${id}` });
     }    
-    if (session.role === 'admin' || comment.userId === session.userId) {
+    if (session.role === 'ADMIN' || comment.userId === session.userId) {
       const deletedComment = await this.db.comment.delete({ where: { id: id } });
       return deletedComment;
     } else {

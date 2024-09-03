@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
+import { Role } from "@prisma/client"
 import { IsEmail, IsNotEmpty, Length, Matches } from "class-validator"
 
 
@@ -55,7 +56,7 @@ export class GetSessionInfoDto{
   isActivated: boolean
 
   @ApiProperty()
-  role: string
+  role: Role;
 
   @ApiProperty()
   iat: number

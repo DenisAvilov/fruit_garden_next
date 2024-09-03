@@ -12,6 +12,12 @@ import { BasketModule } from './basket/basket.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+   // Додаємо підтримку CORS
+  app.enableCors({
+    origin: `${process.env.CLIENT_PORT}`, // Дозволяємо запити з цього джерела
+    methods: `${process.env.METHODS}`,
+    credentials: true, // Дозволяємо передавати куки
+  });
    
  const globalOptions = new DocumentBuilder()
 

@@ -9,4 +9,7 @@ export class CategoryDto {
 
   @ApiProperty()
   name: string; 
+
+  @ApiProperty()
+  icons: string
 }

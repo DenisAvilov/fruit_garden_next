@@ -1,6 +1,6 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards,  } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards,  } from '@nestjs/common';
 import { DeletePriceDto,  ProductDto } from './productDto';
-import { ApiCreatedResponse, ApiOkResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import { AttributeDto, PatchAttributeDto, PostProductDto} from './postProductDto';
 import { ProductService } from './product.service';
 import { BrandService } from './brand/brand.service';
@@ -112,17 +112,19 @@ async productId(@Param('id', ParseIntPipe) id: number ):Promise<ProductDto>  {
     type: ProductDto,
     description: 'Отримуємо всі продукти.'
   })
-@ApiQuery({ name: 'limit', required: false })
-@ApiQuery({ name: 'page', required: false })
+@ApiParam({ name: 'limit', required: true, description: 'Кількість продуктів на сторінку' })
+@ApiParam({ name: 'page', required: true, description: 'Номер сторінки' })
 async getAllProduct( 
-  @Query('limit') limit: number | string = '3', 
-  @Query('page') page: number | string = '1' 
+  // @Query('limit') limit: number | string = '3', 
+  // @Query('page') page: number | string = '1' 
+  @Param('limit') limit: number | string = '3', 
+  @Param('page') page: number | string = '1' 
 ) { 
   const parsedLimits = parseInt(limit.toString(), 10)
   const parsedPage = parseInt(page.toString(), 10)
     
  const { limit: parsedLimit, offset } = await LimitPages.limitPage(parsedLimits, parsedPage);
-  const products = await this.dbService.product.findMany({
+ const products = await this.dbService.product.findMany({
     take: parsedLimit,
     skip: offset,
     include: {
@@ -210,8 +212,9 @@ async pricePatch(@Body() body: PatchAttributeDto):Promise<{id: number, productId
 
 @Delete('delete-price/:id')
 @Roles('ADMIN')
+@ApiParam({ name: 'id', required: true, description: 'Видалення ціни продукту' })
 @ApiOkResponse({ type:  AttributeDto , description: 'Id price'})
-async priceDelete(@Body() body: DeletePriceDto){
+async priceDelete(@Param('id') id: string, @Body() body: DeletePriceDto){
   return  await this.productService.productsAttributePriceDelete(body)
  }
 
